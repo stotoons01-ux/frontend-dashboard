@@ -56,9 +56,12 @@
     const clientIdInput = document.getElementById('clientId');
     const redirectInput = document.getElementById('redirectUri');
 
-    // Example placeholders for convenience — replace with your app values.
-    clientIdInput.value = 'YOUR_CLIENT_ID';
-    redirectInput.value = location.origin + '/oauth-callback.html';
+    // Your Discord Application Client ID from https://discord.com/developers/applications
+    // 1. Go to Discord Developer Portal
+    // 2. Click on your Application
+    // 3. Copy the Client ID from the OAuth2 section
+    clientIdInput.value = '1399025185046134866'; // Paste your Client ID here between the quotes
+    redirectInput.value = 'https://whiteout-survival.vercel.app/oauth-callback.html';
 
     btnCode.addEventListener('click', (e)=>{
       e.preventDefault();
