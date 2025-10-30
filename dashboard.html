@@ -215,6 +215,7 @@
       <img id="profile-avatar" class="avatar">
       <div class="user-info">
         <h2 id="profile-name">Loading...</h2>
+        <div id="auth-status" style="color:#bdbdbf; margin-top:8px; font-size:0.95em;"></div>
         <div class="user-tag" id="profile-tag"></div>
         <div class="user-id" id="profile-id" style="color: #89898B; margin-top: 4px; font-size: 0.85em;"></div>
       </div>
@@ -315,8 +316,9 @@
       }
 
       if (!token) {
-        // No token after waiting — send user to the public index/login page
-        window.location.href = 'index.html';
+        // No token after waiting — show a friendly login prompt instead of redirecting
+        document.getElementById('profile-name').textContent = 'Not signed in';
+        document.getElementById('auth-status').innerHTML = '<a class="btn" href="login.html">Sign in with Discord</a>';
         return;
       }
       loadUserData(token);
@@ -355,8 +357,15 @@
 
       } catch (err) {
         console.error('Auth check failed:', err);
-        localStorage.removeItem('discord_access_token');
-        window.location.href = 'index.html';
+        // Don't force-redirect. Show an error and let the user retry or login again.
+        document.getElementById('profile-name').textContent = 'Error loading profile';
+        document.getElementById('auth-status').textContent = 'There was a problem fetching your data. Please try again or sign in again.';
+        // Show action buttons
+        const status = document.getElementById('auth-status');
+        status.innerHTML = '<div style="display:flex;gap:8px;margin-top:8px">'
+          + '<button class="btn" onclick="checkAuth()">Retry</button>'
+          + '<a class="btn" href="login.html">Sign in</a>'
+          + '</div>';
       }
     }
 
