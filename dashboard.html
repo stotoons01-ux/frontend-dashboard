@@ -272,7 +272,9 @@
     // set this to the backend base URL, e.g. 'http://localhost:8080'
     const API_BASE = '';
 
-    // Check if user is authenticated
+    // Check if user is authenticated. To avoid a race where the OAuth callback
+    // has just written the access token to localStorage and redirected here,
+    // we poll localStorage for a short period before giving up and redirecting.
     async function checkAuth() {
       let token = localStorage.getItem('discord_access_token');
 
@@ -302,7 +304,18 @@
         }
       }
 
+      // If token is not present yet, wait briefly for the OAuth callback to finish
+      const maxWait = 2500; // ms
+      const interval = 200; // ms
+      let waited = 0;
+      while (!token && waited < maxWait) {
+        await new Promise(r => setTimeout(r, interval));
+        waited += interval;
+        token = localStorage.getItem('discord_access_token');
+      }
+
       if (!token) {
+        // No token after waiting — send user to the public index/login page
         window.location.href = 'index.html';
         return;
       }
