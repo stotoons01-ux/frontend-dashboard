@@ -3,48 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord Bot Dashboard</title>
+  <title>Whiteout Survival Bot Dashboard</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #0e1621;
-      color: white;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #0e1621, #1a2a3a);
+      color: #fff;
+      margin: 0;
+      padding: 0;
       text-align: center;
-      padding: 50px;
     }
-    h1 { color: #00aaff; }
-    .card {
-      background: #1e2a38;
-      border-radius: 12px;
+    header {
+      background: #00aaff33;
       padding: 20px;
-      margin: 20px auto;
-      width: 300px;
+      font-size: 1.5em;
+      color: #00aaff;
       box-shadow: 0 0 10px #00aaff40;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+    }
+    .card {
+      background: #1f2b3a;
+      border-radius: 16px;
+      padding: 25px;
+      width: 320px;
+      margin: 20px;
+      box-shadow: 0 0 15px rgba(0, 170, 255, 0.2);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: scale(1.03); }
+    .card h2 { color: #00aaff; margin-bottom: 10px; }
+    footer {
+      padding: 20px;
+      font-size: 0.9em;
+      background: #0b1018;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
-  <h1>🤖 Discord Bot Dashboard</h1>
-  <div class="card">
-    <h2>Bot Stats</h2>
-    <p id="status">Loading...</p>
-    <p><strong>Servers:</strong> <span id="servers">--</span></p>
-    <p><strong>Users:</strong> <span id="users">--</span></p>
-    <p><strong>Uptime:</strong> <span id="uptime">--</span></p>
-  </div>
+  <header>🤖 Whiteout Survival Bot Dashboard</header>
+  <main>
+    <div class="card">
+      <h2>Bot Status</h2>
+      <p><strong>Status:</strong> <span id="status">Loading...</span></p>
+      <p><strong>Servers:</strong> <span id="servers">--</span></p>
+      <p><strong>Users:</strong> <span id="users">--</span></p>
+      <p><strong>Uptime:</strong> <span id="uptime">--</span></p>
+    </div>
+  </main>
+  <footer>
+    Powered by Flask + Vercel | Whiteout Survival © 2025
+  </footer>
 
   <script>
     async function loadStats() {
-      const response = await fetch("https://discord-bot-backend-zagt.onrender.com/stats");
-      const data = await response.json();
-      document.getElementById("status").textContent = "✅ Online";
-      document.getElementById("servers").textContent = data.servers;
-      document.getElementById("users").textContent = data.users;
-      document.getElementById("uptime").textContent = data.uptime;
+      try {
+        const res = await fetch("https://discord-bot-backend-zagt.onrender.com/stats");
+        const data = await res.json();
+        document.getElementById("status").textContent = "✅ Online";
+        document.getElementById("servers").textContent = data.servers;
+        document.getElementById("users").textContent = data.users;
+        document.getElementById("uptime").textContent = data.uptime;
+      } catch (err) {
+        document.getElementById("status").textContent = "❌ Offline";
+        console.error(err);
+      }
     }
 
     loadStats();
-    setInterval(loadStats, 10000); // refresh every 10 sec
+    setInterval(loadStats, 15000);
   </script>
 </body>
 </html>
