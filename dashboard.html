@@ -253,9 +253,19 @@
         </button>
       </div>
     </div>
-    
-    <div class="servers-grid" id="servers-list">
-      <!-- Server cards will be dynamically inserted here -->
+
+    <div id="servers-diagnostics" style="color:#bdbdbf; margin-bottom:12px;">
+      <!-- diagnostic messages (populated by JS) -->
+    </div>
+
+    <h3 style="margin-top:8px;">Servers where the bot is present</h3>
+    <div class="servers-grid" id="servers-list-present">
+      <!-- Present server cards -->
+    </div>
+
+    <h3 style="margin-top:18px;">Servers where the bot is missing</h3>
+    <div class="servers-grid" id="servers-list-missing">
+      <!-- Missing server cards -->
     </div>
   </main>
 
@@ -293,9 +303,9 @@
   </footer>
 
   <script>
-    // API base for backend proxy (empty = same origin). If your backend runs on a different origin,
-    // set this to the backend base URL, e.g. 'http://localhost:8080'
-    const API_BASE = '';
+  // API base for backend proxy. Set to your Render backend so frontend calls the hosted API.
+  // Example: 'https://discord-bot-backend-zagt.onrender.com'
+  const API_BASE = 'https://discord-bot-backend-zagt.onrender.com';
 
     // Check if user is authenticated. To avoid a race where the OAuth callback
     // has just written the access token to localStorage and redirected here,
@@ -377,7 +387,8 @@
         if (!guildsRes.ok) throw new Error('Failed to fetch guilds');
         const guilds = await guildsRes.json();
 
-        // Ask backend which of these guilds the bot is present in, then render only those
+        // Ask backend which of these guilds the bot is present in, then render lists
+        const diag = document.getElementById('servers-diagnostics');
         try {
           const guildIds = guilds.map(g => g.id);
           const botRes = await fetch(API_BASE + '/bot/guilds_status', {
@@ -388,17 +399,26 @@
           if (botRes.ok) {
             const botData = await botRes.json();
             const presentSet = new Set(botData.present || []);
-            const filtered = guilds.filter(g => presentSet.has(String(g.id)));
-            renderServers(filtered);
+            const present = guilds.filter(g => presentSet.has(String(g.id)));
+            const missing = guilds.filter(g => !presentSet.has(String(g.id)));
+            // Render both lists
+            renderServers(present, document.getElementById('servers-list-present'));
+            renderServers(missing, document.getElementById('servers-list-missing'));
+            diag.textContent = `Detected ${present.length} server(s) where the bot is present, ${missing.length} where it is missing.`;
           } else {
-            console.warn('Bot presence check failed', await botRes.text());
-            // Fallback: render all guilds
-            renderServers(guilds);
+            const text = await botRes.text();
+            console.warn('Bot presence check failed', text);
+            diag.textContent = 'Bot presence check failed — showing all your servers. See console for details.';
+            // Fallback: show all servers in the "present" list so you can manage them
+            renderServers(guilds, document.getElementById('servers-list-present'));
+            document.getElementById('servers-list-missing').innerHTML = '';
           }
         } catch (e) {
           console.error('Error checking bot presence', e);
+          diag.textContent = 'Error checking bot presence — showing all servers. Check backend logs.';
           // Fallback: render all guilds
-          renderServers(guilds);
+          renderServers(guilds, document.getElementById('servers-list-present'));
+          document.getElementById('servers-list-missing').innerHTML = '';
         }
 
       } catch (err) {
@@ -415,10 +435,18 @@
       }
     }
 
-    function renderServers(guilds) {
-      const serversList = document.getElementById('servers-list');
-      serversList.innerHTML = '';
-      
+    // Render servers into a target container element. If targetEl is omitted,
+    // default to the main 'servers-list' (legacy). This lets us render present
+    // and missing lists separately.
+    function renderServers(guilds, targetEl) {
+      if (!targetEl) targetEl = document.getElementById('servers-list');
+      targetEl.innerHTML = '';
+
+      if (!guilds || !guilds.length) {
+        targetEl.innerHTML = '<div style="color:#8f97a2; padding:18px">No servers to show.</div>';
+        return;
+      }
+
       guilds.forEach(guild => {
         const card = document.createElement('div');
         card.className = 'server-card';
@@ -443,7 +471,7 @@
             </div>
           </div>
         `;
-        serversList.appendChild(card);
+        targetEl.appendChild(card);
       });
     }
 
