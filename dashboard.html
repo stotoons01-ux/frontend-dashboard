@@ -258,6 +258,10 @@
       <!-- diagnostic messages (populated by JS) -->
     </div>
 
+    <details id="debug-panel" style="margin-bottom:12px; color:#c9cbcf; background:rgba(255,255,255,0.02); padding:8px; border-radius:6px;">
+      <summary style="cursor:pointer; outline:none;">Raw API responses (click to expand)</summary>
+      <pre id="raw-responses" style="white-space:pre-wrap; word-wrap:break-word; max-height:320px; overflow:auto; margin-top:8px; background:rgba(0,0,0,0.25); padding:8px; border-radius:4px; color:#e6eef8;"></pre>
+    </details>
     <h3 style="margin-top:8px;">Servers where the bot is present</h3>
     <div class="servers-grid" id="servers-list-present">
       <!-- Present server cards -->
@@ -398,6 +402,13 @@
           });
           if (botRes.ok) {
             const botData = await botRes.json();
+            // Show raw responses for debugging
+            try {
+              const rawEl = document.getElementById('raw-responses');
+              if (rawEl) rawEl.textContent = 'Guilds (from /oauth/guilds):\n' + JSON.stringify(guilds, null, 2) + '\n\nBot presence (from /bot/guilds_status):\n' + JSON.stringify(botData, null, 2);
+            } catch (e) {
+              console.warn('Failed to write raw debug output', e);
+            }
             const presentSet = new Set(botData.present || []);
             const present = guilds.filter(g => presentSet.has(String(g.id)));
             const missing = guilds.filter(g => !presentSet.has(String(g.id)));
@@ -409,6 +420,9 @@
             const text = await botRes.text();
             console.warn('Bot presence check failed', text);
             diag.textContent = 'Bot presence check failed — showing all your servers. See console for details.';
+            // Show raw response + guilds for debugging
+            const rawEl = document.getElementById('raw-responses');
+            if (rawEl) rawEl.textContent = 'Guilds (from /oauth/guilds):\n' + JSON.stringify(guilds, null, 2) + '\n\nBot presence check failed - response body:\n' + text;
             // Fallback: show all servers in the "present" list so you can manage them
             renderServers(guilds, document.getElementById('servers-list-present'));
             document.getElementById('servers-list-missing').innerHTML = '';
@@ -416,6 +430,9 @@
         } catch (e) {
           console.error('Error checking bot presence', e);
           diag.textContent = 'Error checking bot presence — showing all servers. Check backend logs.';
+          // Show raw exception for debugging
+          const rawEl = document.getElementById('raw-responses');
+          if (rawEl) rawEl.textContent = 'Guilds (from /oauth/guilds):\n' + JSON.stringify(guilds, null, 2) + '\n\nException while checking bot presence:\n' + (e && e.stack ? e.stack : String(e));
           // Fallback: render all guilds
           renderServers(guilds, document.getElementById('servers-list-present'));
           document.getElementById('servers-list-missing').innerHTML = '';
