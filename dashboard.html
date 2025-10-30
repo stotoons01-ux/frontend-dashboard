@@ -362,16 +362,23 @@
       loadUserData(token);
     }
 
-    async function loadUserData(token) {
+      async function loadUserData(token) {
       try {
+        const rawEl = document.getElementById('raw-responses');
+        rawEl.textContent = 'Loading user data...\n';
+
         // Load user profile (via backend proxy to avoid CORS)
+        rawEl.textContent += `Fetching ${API_BASE}/oauth/me...\n`;
         const userRes = await fetch(API_BASE + '/oauth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (!userRes.ok) throw new Error('Failed to fetch user');
+        if (!userRes.ok) {
+          const errorText = await userRes.text();
+          rawEl.textContent += `Failed to fetch user: ${userRes.status} ${userRes.statusText}\nResponse: ${errorText}\n`;
+          throw new Error('Failed to fetch user');
+        }
         const userData = await userRes.json();
-
-        // Update UI with user data
+        rawEl.textContent += 'User data fetched successfully.\n\n';        // Update UI with user data
         const avatarUrl = userData.avatar 
           ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` 
           : 'https://cdn.discordapp.com/embed/avatars/0.png';
@@ -385,16 +392,23 @@
   document.getElementById('profile-id').textContent = `ID: ${userData.id}`;
 
         // Load user's guilds (via backend proxy)
+        rawEl.textContent += `Fetching ${API_BASE}/oauth/guilds...\n`;
         const guildsRes = await fetch(API_BASE + '/oauth/guilds', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (!guildsRes.ok) throw new Error('Failed to fetch guilds');
+        if (!guildsRes.ok) {
+          const errorText = await guildsRes.text();
+          rawEl.textContent += `Failed to fetch guilds: ${guildsRes.status} ${guildsRes.statusText}\nResponse: ${errorText}\n`;
+          throw new Error('Failed to fetch guilds');
+        }
         const guilds = await guildsRes.json();
+        rawEl.textContent += `Found ${guilds.length} guilds.\n\n`;
 
         // Ask backend which of these guilds the bot is present in, then render lists
         const diag = document.getElementById('servers-diagnostics');
         try {
           const guildIds = guilds.map(g => g.id);
+          rawEl.textContent += `Checking bot presence for ${guildIds.length} guilds via ${API_BASE}/bot/guilds_status...\n`;
           const botRes = await fetch(API_BASE + '/bot/guilds_status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
