@@ -130,7 +130,7 @@
   <div id="dashboard-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <div class="modal-header">
-        <h3>Manage Servers</h3>
+        <h3>Manage Discord Servers</h3>
         <div>
           <button id="close-dashboard" class="btn" style="background:transparent;color:#bfe8ff;border:1px solid #244">Close</button>
         </div>
@@ -138,14 +138,15 @@
 
       <div class="modal-body">
         <div>
-          <p class="small muted">Use this panel to simulate managing servers. Actions are local to your browser and persist in localStorage.</p>
+          <p class="small muted">Use this panel to simulate managing your Discord servers (guilds). Actions are local to your browser and persist in localStorage — this UI does not connect to Discord. To perform real guild operations you'd need a bot and server-side integration.</p>
           <ul id="server-list" class="server-list" aria-live="polite"></ul>
         </div>
 
         <aside>
           <div style="margin-bottom:12px">
-            <label class="small muted">Add new server</label>
-            <input id="new-server-name" type="text" placeholder="Server name (eg. EU-1)" />
+            <label class="small muted">Add new Discord server</label>
+            <input id="new-server-name" type="text" placeholder="Server / Guild name (eg. EU-1)" />
+            <input id="new-server-guild" type="text" placeholder="Optional: Guild ID (eg. 123456789012345678)" style="margin-top:8px" />
             <div style="margin-top:8px; display:flex; gap:8px">
               <button id="add-server" class="btn">Add</button>
               <button id="reset-servers" class="btn" style="background:#ff7b7b">Reset</button>
@@ -186,18 +187,19 @@
     const openBtn = document.getElementById('open-dashboard');
     const closeBtn = document.getElementById('close-dashboard');
     const serverListEl = document.getElementById('server-list');
-    const addBtn = document.getElementById('add-server');
-    const resetBtn = document.getElementById('reset-servers');
-    const newNameInput = document.getElementById('new-server-name');
+  const addBtn = document.getElementById('add-server');
+  const resetBtn = document.getElementById('reset-servers');
+  const newNameInput = document.getElementById('new-server-name');
+  const newGuildInput = document.getElementById('new-server-guild');
 
     // Minimal persistent store in localStorage
     const STORAGE_KEY = 'dashboard_servers_v1';
 
     function defaultServers(){
       return [
-        {id: uid(), name: 'EU-1', status: 'running'},
-        {id: uid(), name: 'US-2', status: 'stopped'},
-        {id: uid(), name: 'ASIA-1', status: 'running'}
+        {id: uid(), name: 'EU-1', guildId: '111111111111111111', status: 'running'},
+        {id: uid(), name: 'US-2', guildId: '222222222222222222', status: 'stopped'},
+        {id: uid(), name: 'ASIA-1', guildId: '333333333333333333', status: 'running'}
       ];
     }
 
@@ -223,7 +225,7 @@
         const li = document.createElement('li');
         li.className = 'server-item';
         const meta = document.createElement('div'); meta.className = 'server-meta';
-        const name = document.createElement('div'); name.className = 'server-name'; name.textContent = s.name;
+        const name = document.createElement('div'); name.className = 'server-name'; name.textContent = s.name + (s.guildId ? ` — ${s.guildId}` : '');
         const status = document.createElement('div'); status.className = 'server-status'; status.textContent = s.status === 'running' ? '🟢 running' : '⛔ stopped';
         meta.appendChild(name); meta.appendChild(status);
 
@@ -253,12 +255,12 @@
       saveServers(list); renderServers();
     }
 
-    function addServer(name){
-      if(!name || !name.trim()) return alert('Please provide a server name');
+    function addServer(name, guildId){
+      if(!name || !name.trim()) return alert('Please provide a server (guild) name');
       const list = loadServers();
-      list.push({id: uid(), name: name.trim(), status: 'stopped'});
+      list.push({id: uid(), name: name.trim(), guildId: guildId ? guildId.trim() : '', status: 'stopped'});
       saveServers(list); renderServers();
-      newNameInput.value = '';
+      newNameInput.value = ''; document.getElementById('new-server-guild').value = '';
     }
 
     function removeServer(id){
@@ -279,8 +281,9 @@
     closeBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
     backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) { backdrop.style.display='none'; } });
 
-    addBtn.addEventListener('click', ()=> addServer(newNameInput.value));
-    newNameInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') addServer(newNameInput.value); });
+  addBtn.addEventListener('click', ()=> addServer(newNameInput.value, newGuildInput.value));
+  newNameInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') addServer(newNameInput.value, newGuildInput.value); });
+  newGuildInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') addServer(newNameInput.value, newGuildInput.value); });
     resetBtn.addEventListener('click', resetServers);
 
     // ensure there's some initial data

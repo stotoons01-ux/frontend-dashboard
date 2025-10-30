@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OAuth Callback — Whiteout Bot Dashboard</title>
+  <style>
+    body{ font-family: "Segoe UI", Arial, sans-serif; background:linear-gradient(135deg,#071021,#0b1220); color:#e6f7ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
+    .box{ background:#07121a; padding:20px; border-radius:10px; width:640px; box-shadow:0 10px 30px rgba(0,0,0,0.5) }
+    pre{ background:#06121a; padding:12px; border-radius:8px; overflow:auto }
+    a{ color:#7fe0ff }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>OAuth callback</h2>
+    <p>This page captures the OAuth redirect from Discord.</p>
+    <div id="content">
+      <p>Parsing response...</p>
+    </div>
+    <p class="muted">After successful login you'll be redirected back to the dashboard. For production, exchange the returned code server-side (Authorization Code flow).</p>
+    <p><a href="index.html">Back to dashboard</a> · <a href="login.html">Back to login</a></p>
+  </div>
+
+  <script>
+    // This page handles both response_type=token (implicit) and response_type=code (auth code)
+    function parseQuery(qs){
+      const params = new URLSearchParams(qs.replace(/^\?/,''));
+      const out = {};
+      for(const [k,v] of params.entries()) out[k]=v;
+      return out;
+    }
+
+    function parseFragment(hash){
+      const fragment = hash.replace(/^#/, '');
+      return parseQuery(fragment);
+    }
+
+    (function(){
+      const content = document.getElementById('content');
+      const q = parseQuery(location.search);
+      const f = parseFragment(location.hash);
+
+      // Prefer fragment (implicit token) if present
+      if(Object.keys(f).length){
+        // implicit: access_token, token_type, expires_in, scope
+        content.innerHTML = '<h3>Received token (client-side flow)</h3>' +
+          '<p><strong>Note:</strong> This token arrived in your browser URL fragment. This flow is insecure for production.</p>' +
+          '<pre>'+JSON.stringify(f,null,2)+'</pre>' +
+          '<p>Saving token to <code>localStorage</code> as <code>discord_access_token</code> and returning to the dashboard.</p>';
+        try{ localStorage.setItem('discord_access_token', f.access_token || ''); localStorage.setItem('discord_token_scope', f.scope || ''); }
+        catch(e){ console.warn('localStorage failed', e); }
+        setTimeout(()=> window.location.href = 'index.html', 2200);
+        return;
+      }
+
+      // If we have a code (Authorization Code flow), show it and advise server-side exchange
+      if(q.code){
+        content.innerHTML = '<h3>Received authorization code</h3>' +
+          '<p>Copy this code and send it to your backend to exchange for an access token (server must supply client_secret).</p>' +
+          '<pre>'+JSON.stringify(q,null,2)+'</pre>' +
+          '<p class="muted">For convenience this demo stores the code in localStorage as <code>discord_auth_code</code> (development only).</p>';
+        try{ localStorage.setItem('discord_auth_code', q.code); }
+        catch(e){}
+        return;
+      }
+
+      // If Discord returned an error
+      if(q.error || f.error){
+        const err = q.error || f.error;
+        content.innerHTML = '<h3>OAuth Error</h3><pre>'+JSON.stringify(q || f,null,2)+'</pre>';
+        return;
+      }
+
+      content.innerHTML = '<p>No code or token found in the redirect. Check that your Discord application Redirect URI matches this page URL exactly.</p>';
+    })();
+  </script>
+</body>
+</html>

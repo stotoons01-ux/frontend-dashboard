@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login — Whiteout Bot Dashboard</title>
+  <style>
+    body{ font-family: "Segoe UI", Arial, sans-serif; background:linear-gradient(135deg,#071021,#112233); color:#e6f7ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
+    .box{ background:#0f1720; padding:28px; border-radius:12px; width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+    h1{ margin:0 0 8px 0; color:#7fe0ff }
+    p{ color:#9fb6c6; margin:8px 0 16px }
+    .btn{ display:inline-block; background:linear-gradient(90deg,#00aaff,#0077cc); color:#002233; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:700 }
+    .muted{ color:#8fa8b8; font-size:0.9em }
+    label{ display:block; margin-top:10px; color:#9fb6c6 }
+    input[type=text]{ width:100%; padding:8px; margin-top:6px; border-radius:8px; border:1px solid #24303a; background:#081018; color:#e6f7ff }
+    .flows{ display:flex; gap:8px; margin-top:12px }
+    a.small{ font-size:0.9em; color:#bfe8ff; display:inline-block; margin-top:12px }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Sign in with Discord</h1>
+    <p class="muted">Authorize with your Discord account so this site can manage your bot for servers you control. For production use, follow the Authorization Code flow with a backend to exchange the code securely.</p>
+
+    <label>Client ID</label>
+    <input id="clientId" type="text" placeholder="Your Discord Application client_id" />
+
+    <label>Redirect URI</label>
+    <input id="redirectUri" type="text" placeholder="https://yourdomain.com/oauth-callback.html" />
+
+    <div class="flows">
+      <a id="btn-code" class="btn" href="#">Login (Auth Code — requires backend)</a>
+      <a id="btn-token" class="btn" href="#" style="background:linear-gradient(90deg,#7be0a4,#2aa76b)">Login (Client-side token)</a>
+    </div>
+
+    <p class="muted">Which flow to use?
+      <ul class="muted">
+        <li><strong>Auth Code</strong> — Recommended. Use this if you have a backend that will exchange the code for tokens (safer).</li>
+        <li><strong>Client-side token</strong> — Quick test for development only. The access token will land in the URL fragment (insecure).</li>
+      </ul>
+    </p>
+
+    <a class="small" href="index.html">Return to dashboard (demo)</a>
+  </div>
+
+  <script>
+    // Build Discord OAuth2 URLs from inputs. Replace with real values on deployment.
+    function buildUrl({clientId, redirectUri, responseType}){
+      const base = 'https://discord.com/api/oauth2/authorize';
+      const scope = encodeURIComponent('identify guilds');
+      return `${base}?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=${encodeURIComponent(responseType)}&scope=${scope}&prompt=consent`;
+    }
+
+    const btnCode = document.getElementById('btn-code');
+    const btnToken = document.getElementById('btn-token');
+    const clientIdInput = document.getElementById('clientId');
+    const redirectInput = document.getElementById('redirectUri');
+
+    // Example placeholders for convenience — replace with your app values.
+    clientIdInput.value = 'YOUR_CLIENT_ID';
+    redirectInput.value = location.origin + '/oauth-callback.html';
+
+    btnCode.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const url = buildUrl({ clientId: clientIdInput.value.trim(), redirectUri: redirectInput.value.trim(), responseType: 'code' });
+      window.location.href = url;
+    });
+
+    btnToken.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const url = buildUrl({ clientId: clientIdInput.value.trim(), redirectUri: redirectInput.value.trim(), responseType: 'token' });
+      window.location.href = url;
+    });
+  </script>
+</body>
+</html>
