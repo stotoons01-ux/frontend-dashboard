@@ -50,7 +50,8 @@
           '<p>Saving token to <code>localStorage</code> as <code>discord_access_token</code> and returning to the dashboard.</p>';
         try{ localStorage.setItem('discord_access_token', f.access_token || ''); localStorage.setItem('discord_token_scope', f.scope || ''); }
         catch(e){ console.warn('localStorage failed', e); }
-        setTimeout(()=> window.location.href = 'index.html', 2200);
+        // Redirect to the dashboard where the token will be used to fetch profile and guilds
+        setTimeout(()=> window.location.href = 'dashboard.html', 1200);
         return;
       }
 
@@ -60,9 +61,13 @@
           '<p>Copy this code and send it to your backend to exchange for an access token (server must supply client_secret).</p>' +
           '<pre>'+JSON.stringify(q,null,2)+'</pre>' +
           '<p class="muted">For convenience this demo stores the code in localStorage as <code>discord_auth_code</code> (development only).</p>';
-        try{ localStorage.setItem('discord_auth_code', q.code); }
-        catch(e){}
-        return;
+  try{ localStorage.setItem('discord_auth_code', q.code); }
+  catch(e){}
+  // For authorization code flow we store the code (development convenience)
+  // and redirect the user to the dashboard where the frontend can ask
+  // the backend to exchange the code for tokens.
+  setTimeout(()=> window.location.href = 'dashboard.html', 800);
+  return;
       }
 
       // If Discord returned an error

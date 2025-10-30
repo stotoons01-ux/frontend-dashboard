@@ -268,9 +268,40 @@
   </footer>
 
   <script>
+    // API base for backend proxy (empty = same origin). If your backend runs on a different origin,
+    // set this to the backend base URL, e.g. 'http://localhost:8080'
+    const API_BASE = '';
+
     // Check if user is authenticated
     async function checkAuth() {
-      const token = localStorage.getItem('discord_access_token');
+      let token = localStorage.getItem('discord_access_token');
+
+      // If we have an authorization code (auth code flow) but no token, try to exchange it
+      const authCode = localStorage.getItem('discord_auth_code');
+      if (!token && authCode) {
+        try {
+          const resp = await fetch(API_BASE + '/oauth/exchange', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: authCode, redirect_uri: window.location.origin + '/oauth-callback.html' })
+          });
+          if (resp.ok) {
+            const tokens = await resp.json();
+            // Save access token and continue
+            if (tokens.access_token) {
+              localStorage.setItem('discord_access_token', tokens.access_token);
+              token = tokens.access_token;
+              // optionally remove stored auth code
+              localStorage.removeItem('discord_auth_code');
+            }
+          } else {
+            console.warn('Token exchange failed', await resp.text());
+          }
+        } catch (e) {
+          console.error('Exchange error', e);
+        }
+      }
+
       if (!token) {
         window.location.href = 'index.html';
         return;
@@ -280,8 +311,8 @@
 
     async function loadUserData(token) {
       try {
-        // Load user profile
-        const userRes = await fetch('https://discord.com/api/users/@me', {
+        // Load user profile (via backend proxy to avoid CORS)
+        const userRes = await fetch(API_BASE + '/oauth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!userRes.ok) throw new Error('Failed to fetch user');
@@ -299,8 +330,8 @@
         document.getElementById('profile-tag').textContent = userData.username;
         document.getElementById('profile-id').textContent = `ID: ${userData.id}`;
 
-        // Load user's guilds
-        const guildsRes = await fetch('https://discord.com/api/users/@me/guilds', {
+        // Load user's guilds (via backend proxy)
+        const guildsRes = await fetch(API_BASE + '/oauth/guilds', {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!guildsRes.ok) throw new Error('Failed to fetch guilds');
