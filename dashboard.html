@@ -322,12 +322,59 @@
 
     <div class="section-title">
       Your Servers
-      <div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <button onclick="debugProfileState()" class="btn" style="background: #2D2D2F;">
+          Debug Profile
+        </button>
         <button onclick="window.location.href='https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&permissions=8&scope=bot%20applications.commands'" class="btn">
           Add to Server
         </button>
       </div>
     </div>
+    
+    <script>
+    async function debugProfileState() {
+      const rawEl = document.getElementById('raw-responses');
+      const token = localStorage.getItem('discord_access_token');
+      
+      rawEl.textContent = '=== Debug Profile State ===\n';
+      rawEl.textContent += `1. Token exists: ${Boolean(token)}\n`;
+      if (token) {
+        rawEl.textContent += `2. Token preview: ${token.slice(0, 10)}...\n`;
+        
+        try {
+          const response = await fetch(API_BASE + '/debug/env');
+          const envData = await response.json();
+          rawEl.textContent += `3. Backend env check:\n${JSON.stringify(envData, null, 2)}\n`;
+        } catch (e) {
+          rawEl.textContent += `3. Backend env check failed: ${e}\n`;
+        }
+        
+        try {
+          const response = await fetch(API_BASE + '/oauth/me', {
+            headers: { 
+              'Authorization': 'Bearer ' + token,
+              'Accept': 'application/json'
+            }
+          });
+          const text = await response.text();
+          rawEl.textContent += `4. Profile response (${response.status}):\n${text}\n`;
+        } catch (e) {
+          rawEl.textContent += `4. Profile fetch failed: ${e}\n`;
+        }
+      }
+      
+      const imgs = ['user-avatar', 'profile-avatar'].map(id => document.getElementById(id));
+      rawEl.textContent += '\n5. Image elements:\n';
+      imgs.forEach(img => {
+        if (img) {
+          rawEl.textContent += `${img.id}: src=${img.src}\n`;
+        } else {
+          rawEl.textContent += `${img.id}: NOT FOUND\n`;
+        }
+      });
+    }
+    </script>
 
     <div id="servers-diagnostics" style="color:#bdbdbf; margin-bottom:12px;">
       <!-- diagnostic messages (populated by JS) -->
@@ -391,10 +438,14 @@
     // we poll localStorage for a short period before giving up and redirecting.
     async function checkAuth() {
       const rawEl = document.getElementById('raw-responses');
-      rawEl.textContent = 'Checking authentication...\n';
+      if (!rawEl) {
+        console.error('Debug panel not found');
+        return;
+      }
       
+      rawEl.textContent = '=== Authentication Check ===\n';
       let token = localStorage.getItem('discord_access_token');
-      rawEl.textContent += `Access token in localStorage: ${token ? 'Present' : 'Missing'}\n`;
+      rawEl.textContent += `Access token in localStorage: ${token ? token.slice(0,10) + '...' : 'Missing'}\n';
 
       // If we have an authorization code (auth code flow) but no token, try to exchange it
       const authCode = localStorage.getItem('discord_auth_code');
@@ -460,12 +511,18 @@
       async function loadUserData(token) {
       try {
         const rawEl = document.getElementById('raw-responses');
-        rawEl.textContent = 'Loading user data...\n';
+        rawEl.textContent = '=== Loading User Profile ===\n';
 
         // Load user profile (via backend proxy to avoid CORS)
-        rawEl.textContent += `Fetching ${API_BASE}/oauth/me...\n`;
+        console.log('Fetching user profile...');
+        rawEl.textContent += `1. Calling ${API_BASE}/oauth/me\n`;
+        rawEl.textContent += `2. Using Authorization: Bearer ${token.slice(0,10)}...\n`;
+        
         const userRes = await fetch(API_BASE + '/oauth/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
         });
         if (!userRes.ok) {
           const errorText = await userRes.text();
