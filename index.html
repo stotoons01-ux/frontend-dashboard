@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Bot Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0e1621;
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 { color: #00aaff; }
+    .card {
+      background: #1e2a38;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 300px;
+      box-shadow: 0 0 10px #00aaff40;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 Discord Bot Dashboard</h1>
+  <div class="card">
+    <h2>Bot Stats</h2>
+    <p id="status">Loading...</p>
+    <p><strong>Servers:</strong> <span id="servers">--</span></p>
+    <p><strong>Users:</strong> <span id="users">--</span></p>
+    <p><strong>Uptime:</strong> <span id="uptime">--</span></p>
+  </div>
+
+  <script>
+    async function loadStats() {
+      const response = await fetch("https://discord-bot-backend-zagt.onrender.com/stats");
+      const data = await response.json();
+      document.getElementById("status").textContent = "✅ Online";
+      document.getElementById("servers").textContent = data.servers;
+      document.getElementById("users").textContent = data.users;
+      document.getElementById("uptime").textContent = data.uptime;
+    }
+
+    loadStats();
+    setInterval(loadStats, 10000); // refresh every 10 sec
+  </script>
+</body>
+</html>
