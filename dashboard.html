@@ -511,46 +511,90 @@
     }
 
       async function loadUserData(token) {
-      try {
         const rawEl = document.getElementById('raw-responses');
         rawEl.textContent = '=== Loading User Profile ===\n';
 
-        // Load user profile (via backend proxy to avoid CORS)
-        console.log('Fetching user profile...');
-        rawEl.textContent += `1. Calling ${API_BASE}/oauth/me\n`;
-        rawEl.textContent += `2. Using Authorization: Bearer ${token.slice(0,10)}...\n`;
-        
-        const userRes = await fetch(API_BASE + '/oauth/me', {
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
+        // Clear any previous error states
+        const profileName = document.getElementById('profile-name');
+        const authStatus = document.getElementById('auth-status');
+        if (profileName) profileName.textContent = 'Loading...';
+        if (authStatus) authStatus.textContent = '';
+
+        try {
+          // Validate token format
+          if (!token || typeof token !== 'string' || token.length < 30) {
+            throw new Error('Invalid token format');
           }
-        });
+
+          // Load user profile with retry logic and timeout
+          console.log('Fetching user profile...');
+          rawEl.textContent += `1. Calling ${API_BASE}/oauth/me\n`;
+          rawEl.textContent += `2. Using Authorization: Bearer ${token.slice(0,10)}...\n`;
+          
+          // Create an AbortController for the fetch timeout
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+          
+          let userRes;
+          try {
+            userRes = await fetch(API_BASE + '/oauth/me', {
+              headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+              },
+              signal: controller.signal
+            });
+          } finally {
+            clearTimeout(timeout);
+          }
+
         if (!userRes.ok) {
           const errorText = await userRes.text();
           rawEl.textContent += 'Failed to fetch user: ' + userRes.status + ' ' + userRes.statusText + '\nResponse: ' + errorText + '\n';
-          throw new Error('Failed to fetch user');
+          
+          if (userRes.status === 401) {
+            localStorage.removeItem('discord_access_token'); // Clear invalid token
+            throw new Error('Token expired or invalid');
+          }
+          throw new Error(`Failed to fetch user: ${userRes.status}`);
         }
+
         const userData = await userRes.json();
+        if (!userData || !userData.id) {
+          throw new Error('Invalid user data received');
         rawEl.textContent += 'User data fetched successfully.\nUser data: ' + JSON.stringify(userData, null, 2) + '\n\n';
         
-        // Construct avatar URL with size parameter
+        // Construct avatar URL with size parameter and fallback
         const avatarUrl = userData.avatar 
-          ? 'https://cdn.discordapp.com/avatars/' + userData.id + '/' + userData.avatar + '.png?size=256'
+          ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`
           : 'https://cdn.discordapp.com/embed/avatars/0.png';
         
         rawEl.textContent += 'Avatar URL: ' + avatarUrl + '\n';
         
-        // Update all profile elements
+        // Update all profile elements with error handling
         const userAvatar = document.getElementById('user-avatar');
         const userName = document.getElementById('user-name');
         const profileAvatar = document.getElementById('profile-avatar');
         const profileName = document.getElementById('profile-name');
         
-        if (userAvatar) userAvatar.src = avatarUrl;
-        if (userName) userName.textContent = userData.username;
-        if (profileAvatar) profileAvatar.src = avatarUrl;
-        if (profileName) profileName.textContent = userData.username;
+        // Pre-load the avatar image to ensure it's valid
+        const avatarPreload = new Image();
+        avatarPreload.onerror = () => {
+          rawEl.textContent += 'Avatar preload failed, using fallback\n';
+          const fallbackUrl = 'https://cdn.discordapp.com/embed/avatars/0.png';
+          if (userAvatar) userAvatar.src = fallbackUrl;
+          if (profileAvatar) profileAvatar.src = fallbackUrl;
+        };
+        avatarPreload.onload = () => {
+          rawEl.textContent += 'Avatar preload successful\n';
+          if (userAvatar) userAvatar.src = avatarUrl;
+          if (profileAvatar) profileAvatar.src = avatarUrl;
+        };
+        avatarPreload.src = avatarUrl;
+
+        // Update text elements
+        if (userName) userName.textContent = userData.username || 'Unknown User';
+        if (profileName) profileName.textContent = userData.username || 'Unknown User';
         
         // Add error handlers for images
         [userAvatar, profileAvatar].forEach(img => {
@@ -647,15 +691,38 @@
 
       } catch (err) {
         console.error('Auth check failed:', err);
+        const errorMessage = err.message || 'Unknown error occurred';
+        
         // Don't force-redirect. Show an error and let the user retry or login again.
-        document.getElementById('profile-name').textContent = 'Error loading profile';
-        document.getElementById('auth-status').textContent = 'There was a problem fetching your data. Please try again or sign in again.';
-        // Show action buttons
-        const status = document.getElementById('auth-status');
-        status.innerHTML = '<div style="display:flex;gap:8px;margin-top:8px">'
-          + '<button class="btn" onclick="checkAuth()">Retry</button>'
-          + '<a class="btn" href="login.html">Sign in</a>'
-          + '</div>';
+        const profileName = document.getElementById('profile-name');
+        const authStatus = document.getElementById('auth-status');
+        
+        if (profileName) profileName.textContent = 'Error loading profile';
+        
+        // Customize error message based on the error type
+        let userMessage = 'There was a problem loading your profile. ';
+        if (errorMessage.includes('Token expired') || errorMessage.includes('invalid')) {
+          userMessage = 'Your session has expired. Please sign in again.';
+        } else if (errorMessage.includes('fetch')) {
+          userMessage = 'Unable to connect to Discord. Please check your internet connection and try again.';
+        }
+        
+        // Show detailed error message and action buttons
+        if (authStatus) {
+          authStatus.innerHTML = userMessage +
+            '<div style="display:flex;gap:8px;margin-top:8px">' +
+            '<button class="btn" onclick="checkAuth()">Retry</button>' +
+            '<a class="btn" href="login.html">Sign in</a>' +
+            '</div>';
+        }
+        
+        // Add error details to debug panel
+        const rawEl = document.getElementById('raw-responses');
+        if (rawEl) {
+          rawEl.textContent += '\n=== Error Details ===\n' +
+            'Error: ' + errorMessage + '\n' +
+            'Stack: ' + (err.stack || 'No stack trace available') + '\n';
+        }
       }
     }
 
