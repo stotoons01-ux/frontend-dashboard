@@ -16,17 +16,22 @@
     }
     header {
       background: #00aaff33;
-      padding: 20px;
-      font-size: 1.5em;
+      padding: 20px 16px;
+      font-size: 1.25em;
       color: #00aaff;
       box-shadow: 0 0 10px #00aaff40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    header .brand { font-weight: 700; }
     main {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
+      min-height: 72vh;
+      padding: 24px;
     }
     .card {
       background: #1f2b3a;
@@ -34,7 +39,7 @@
       padding: 25px;
       width: 320px;
       margin: 20px;
-      box-shadow: 0 0 15px rgba(0, 170, 255, 0.2);
+      box-shadow: 0 0 15px rgba(0, 170, 255, 0.12);
       transition: transform 0.2s;
     }
     .card:hover { transform: scale(1.03); }
@@ -45,10 +50,68 @@
       background: #0b1018;
       color: #aaa;
     }
+
+    /* Dashboard button */
+    .btn {
+      background: linear-gradient(90deg,#00aaff,#0077cc);
+      color: #002233;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(0,170,255,0.18);
+    }
+
+    /* Modal / Dashboard panel */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      padding: 20px;
+    }
+    .modal {
+      background: #0f1720;
+      width: 920px;
+      max-width: 100%;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      color: #e6f7ff;
+    }
+    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .modal-body { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+
+    .server-list { list-style:none; margin:0; padding:0; }
+    .server-item {
+      display:flex; align-items:center; justify-content:space-between;
+      background: #111827; padding: 10px; border-radius: 8px; margin-bottom: 10px;
+    }
+    .server-meta { text-align:left; }
+    .server-name { font-weight:700; color:#b6eaff; }
+    .server-status { font-size:0.9em; color:#aab8c6; }
+    .server-actions button { margin-left:8px; }
+
+    .muted { color:#94a3b8; }
+
+    input[type="text"]{ width:100%; padding:8px; border-radius:8px; border:1px solid #24303a; background:#081018; color:#e6f7ff }
+    .small { font-size:0.9em }
+
+    @media (max-width: 760px){ .modal-body{ grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <header>🤖 Whiteout Survival Bot Dashboard</header>
+  <header>
+    <div class="brand">🤖 Whiteout Survival Bot Dashboard</div>
+    <div>
+      <button id="open-dashboard" class="btn">Dashboard</button>
+    </div>
+  </header>
+
   <main>
     <div class="card">
       <h2>Bot Status</h2>
@@ -58,11 +121,50 @@
       <p><strong>Uptime:</strong> <span id="uptime">--</span></p>
     </div>
   </main>
+
   <footer>
     Powered by Flask + Vercel | Whiteout Survival © 2025
   </footer>
 
+  <!-- Dashboard modal -->
+  <div id="dashboard-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div class="modal-header">
+        <h3>Manage Servers</h3>
+        <div>
+          <button id="close-dashboard" class="btn" style="background:transparent;color:#bfe8ff;border:1px solid #244">Close</button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <p class="small muted">Use this panel to simulate managing servers. Actions are local to your browser and persist in localStorage.</p>
+          <ul id="server-list" class="server-list" aria-live="polite"></ul>
+        </div>
+
+        <aside>
+          <div style="margin-bottom:12px">
+            <label class="small muted">Add new server</label>
+            <input id="new-server-name" type="text" placeholder="Server name (eg. EU-1)" />
+            <div style="margin-top:8px; display:flex; gap:8px">
+              <button id="add-server" class="btn">Add</button>
+              <button id="reset-servers" class="btn" style="background:#ff7b7b">Reset</button>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="small muted">Stats</h4>
+            <p class="small">Total servers: <strong id="stat-total">0</strong></p>
+            <p class="small">Running: <strong id="stat-running">0</strong></p>
+            <p class="small">Stopped: <strong id="stat-stopped">0</strong></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Keep original stats loader but make it optional (won't block dashboard)
     async function loadStats() {
       try {
         const res = await fetch("https://discord-bot-backend-zagt.onrender.com/stats");
@@ -73,12 +175,116 @@
         document.getElementById("uptime").textContent = data.uptime;
       } catch (err) {
         document.getElementById("status").textContent = "❌ Offline";
-        console.error(err);
+        console.debug('Stats fetch failed:', err);
       }
     }
-
     loadStats();
     setInterval(loadStats, 15000);
+
+    // --- Dashboard / server management (in-browser simulation) ---
+    const backdrop = document.getElementById('dashboard-backdrop');
+    const openBtn = document.getElementById('open-dashboard');
+    const closeBtn = document.getElementById('close-dashboard');
+    const serverListEl = document.getElementById('server-list');
+    const addBtn = document.getElementById('add-server');
+    const resetBtn = document.getElementById('reset-servers');
+    const newNameInput = document.getElementById('new-server-name');
+
+    // Minimal persistent store in localStorage
+    const STORAGE_KEY = 'dashboard_servers_v1';
+
+    function defaultServers(){
+      return [
+        {id: uid(), name: 'EU-1', status: 'running'},
+        {id: uid(), name: 'US-2', status: 'stopped'},
+        {id: uid(), name: 'ASIA-1', status: 'running'}
+      ];
+    }
+
+    function uid(){ return Math.random().toString(36).slice(2,9); }
+
+    function loadServers(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultServers();
+        return JSON.parse(raw);
+      }catch(e){ return defaultServers(); }
+    }
+
+    function saveServers(list){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+
+    function renderServers(){
+      const list = loadServers();
+      serverListEl.innerHTML = '';
+      let running = 0, stopped = 0;
+      list.forEach(s => {
+        const li = document.createElement('li');
+        li.className = 'server-item';
+        const meta = document.createElement('div'); meta.className = 'server-meta';
+        const name = document.createElement('div'); name.className = 'server-name'; name.textContent = s.name;
+        const status = document.createElement('div'); status.className = 'server-status'; status.textContent = s.status === 'running' ? '🟢 running' : '⛔ stopped';
+        meta.appendChild(name); meta.appendChild(status);
+
+        const actions = document.createElement('div'); actions.className = 'server-actions';
+        const toggle = document.createElement('button'); toggle.className = 'btn small';
+        toggle.textContent = s.status === 'running' ? 'Stop' : 'Start';
+        toggle.onclick = () => { toggleServer(s.id); };
+        const remove = document.createElement('button'); remove.className = 'btn small'; remove.style.background = '#ff6b6b'; remove.textContent = 'Remove';
+        remove.onclick = () => { removeServer(s.id); };
+        actions.appendChild(toggle); actions.appendChild(remove);
+
+        li.appendChild(meta); li.appendChild(actions);
+        serverListEl.appendChild(li);
+
+        if(s.status === 'running') running++; else stopped++;
+      });
+
+      document.getElementById('stat-total').textContent = list.length;
+      document.getElementById('stat-running').textContent = running;
+      document.getElementById('stat-stopped').textContent = stopped;
+    }
+
+    function toggleServer(id){
+      const list = loadServers();
+      const idx = list.findIndex(s=>s.id===id); if(idx===-1) return;
+      list[idx].status = list[idx].status === 'running' ? 'stopped' : 'running';
+      saveServers(list); renderServers();
+    }
+
+    function addServer(name){
+      if(!name || !name.trim()) return alert('Please provide a server name');
+      const list = loadServers();
+      list.push({id: uid(), name: name.trim(), status: 'stopped'});
+      saveServers(list); renderServers();
+      newNameInput.value = '';
+    }
+
+    function removeServer(id){
+      let list = loadServers();
+      list = list.filter(s=>s.id!==id);
+      saveServers(list); renderServers();
+    }
+
+    function resetServers(){
+      if(!confirm('Reset servers to default sample list?')) return;
+      const defs = defaultServers(); saveServers(defs); renderServers();
+    }
+
+    // UI handlers
+    openBtn.addEventListener('click', ()=>{
+      backdrop.style.display = 'flex'; backdrop.setAttribute('aria-hidden','false'); renderServers();
+    });
+    closeBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
+    backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) { backdrop.style.display='none'; } });
+
+    addBtn.addEventListener('click', ()=> addServer(newNameInput.value));
+    newNameInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') addServer(newNameInput.value); });
+    resetBtn.addEventListener('click', resetServers);
+
+    // ensure there's some initial data
+    (function ensureInit(){ if(!localStorage.getItem(STORAGE_KEY)){ saveServers(defaultServers()); } })();
   </script>
 </body>
 </html>
