@@ -3,292 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whiteout Survival Bot Dashboard</title>
+  <title>Whiteout Survival Bot</title>
   <style>
     * { box-sizing: border-box; }
     body {
       font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #0e1621, #1a2a3a);
+      background: #0E0E10;
       color: #fff;
       margin: 0;
       padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #00aaff33;
-      padding: 20px 16px;
-      font-size: 1.25em;
-      color: #00aaff;
-      box-shadow: 0 0 10px #00aaff40;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header .brand { font-weight: 700; }
-    main {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+    }
+    header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #2D2D2F;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .hero {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 72vh;
-      padding: 24px;
+      text-align: center;
+      padding: 40px 20px;
     }
-    .card {
-      background: #1f2b3a;
-      border-radius: 16px;
-      padding: 25px;
-      width: 320px;
-      margin: 20px;
-      box-shadow: 0 0 15px rgba(0, 170, 255, 0.12);
-      transition: transform 0.2s;
+    .hero-content {
+      max-width: 600px;
     }
-    .card:hover { transform: scale(1.03); }
-    .card h2 { color: #00aaff; margin-bottom: 10px; }
+    .bot-avatar {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin: 0 0 16px 0;
+    }
+    .description {
+      color: #89898B;
+      font-size: 1.1em;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #5865F2;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 1.1em;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #4752C4;
+    }
+    .discord-icon {
+      width: 24px;
+      height: 24px;
+    }
     footer {
       padding: 20px;
       font-size: 0.9em;
-      background: #0b1018;
-      color: #aaa;
+      color: #89898B;
+      text-align: center;
+      border-top: 1px solid #2D2D2F;
     }
-
-    /* Dashboard button */
-    .btn {
-      background: linear-gradient(90deg,#00aaff,#0077cc);
-      color: #002233;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-      box-shadow: 0 6px 18px rgba(0,170,255,0.18);
-    }
-
-    /* Modal / Dashboard panel */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 40;
-      padding: 20px;
-    }
-    .modal {
-      background: #0f1720;
-      width: 920px;
-      max-width: 100%;
-      border-radius: 12px;
-      padding: 18px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-      color: #e6f7ff;
-    }
-    .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    .modal-body { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
-
-    .server-list { list-style:none; margin:0; padding:0; }
-    .server-item {
-      display:flex; align-items:center; justify-content:space-between;
-      background: #111827; padding: 10px; border-radius: 8px; margin-bottom: 10px;
-    }
-    .server-meta { text-align:left; }
-    .server-name { font-weight:700; color:#b6eaff; }
-    .server-status { font-size:0.9em; color:#aab8c6; }
-    .server-actions button { margin-left:8px; }
-
-    .muted { color:#94a3b8; }
-
-    input[type="text"]{ width:100%; padding:8px; border-radius:8px; border:1px solid #24303a; background:#081018; color:#e6f7ff }
-    .small { font-size:0.9em }
-
-    @media (max-width: 760px){ .modal-body{ grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header>
-    <div class="brand">🤖 Whiteout Survival Bot Dashboard</div>
-    <div style="display: flex; gap: 10px;">
-      <a href="login.html" class="btn" style="background: linear-gradient(90deg,#ff5555,#cc2222)">Login</a>
-      <button id="open-dashboard" class="btn">Dashboard</button>
+    <div class="brand">
+      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png" alt="Bot Avatar">
+      Whiteout Survival Bot
+    </div>
+    <div>
+      <a href="https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&redirect_uri=https%3A%2F%2Fwhiteout-survival.vercel.app%2Foauth-callback.html&response_type=code&scope=identify%20guilds" class="btn">
+        <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/>
+        </svg>
+        Login with Discord
+      </a>
     </div>
   </header>
 
-  <main>
-    <div class="card">
-      <h2>Bot Status</h2>
-      <p><strong>Status:</strong> <span id="status">Loading...</span></p>
-      <p><strong>Servers:</strong> <span id="servers">--</span></p>
-      <p><strong>Users:</strong> <span id="users">--</span></p>
-      <p><strong>Uptime:</strong> <span id="uptime">--</span></p>
+  <main class="hero">
+    <div class="hero-content">
+      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png" alt="Bot Avatar" class="bot-avatar">
+      <h1>Whiteout Survival Bot</h1>
+      <div class="description">
+        A powerful Discord bot designed to enhance your Whiteout Survival gaming experience. Login to manage your bot servers and customize settings for your Discord community.
+      </div>
+      <div>
+        <a href="https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&redirect_uri=https%3A%2F%2Fwhiteout-survival.vercel.app%2Foauth-callback.html&response_type=code&scope=identify%20guilds" class="btn">
+          <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/>
+          </svg>
+          Get Started
+        </a>
+      </div>
     </div>
   </main>
 
   <footer>
-    Powered by Flask + Vercel | Whiteout Survival © 2025
+    Whiteout Survival Bot © 2025
   </footer>
 
-  <!-- Dashboard modal -->
-  <div id="dashboard-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document">
-      <div class="modal-header">
-        <h3>Manage Discord Servers</h3>
-        <div>
-          <button id="close-dashboard" class="btn" style="background:transparent;color:#bfe8ff;border:1px solid #244">Close</button>
-        </div>
-      </div>
-
-      <div class="modal-body">
-        <div>
-          <p class="small muted">Use this panel to simulate managing your Discord servers (guilds). Actions are local to your browser and persist in localStorage — this UI does not connect to Discord. To perform real guild operations you'd need a bot and server-side integration.</p>
-          <ul id="server-list" class="server-list" aria-live="polite"></ul>
-        </div>
-
-        <aside>
-          <div style="margin-bottom:12px">
-            <label class="small muted">Add new Discord server</label>
-            <input id="new-server-name" type="text" placeholder="Server / Guild name (eg. EU-1)" />
-            <input id="new-server-guild" type="text" placeholder="Optional: Guild ID (eg. 123456789012345678)" style="margin-top:8px" />
-            <div style="margin-top:8px; display:flex; gap:8px">
-              <button id="add-server" class="btn">Add</button>
-              <button id="reset-servers" class="btn" style="background:#ff7b7b">Reset</button>
-            </div>
-          </div>
-
-          <div>
-            <h4 class="small muted">Stats</h4>
-            <p class="small">Total servers: <strong id="stat-total">0</strong></p>
-            <p class="small">Running: <strong id="stat-running">0</strong></p>
-            <p class="small">Stopped: <strong id="stat-stopped">0</strong></p>
-          </div>
-        </aside>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // Keep original stats loader but make it optional (won't block dashboard)
-    async function loadStats() {
-      try {
-        const res = await fetch("https://discord-bot-backend-zagt.onrender.com/stats");
-        const data = await res.json();
-        document.getElementById("status").textContent = "✅ Online";
-        document.getElementById("servers").textContent = data.servers;
-        document.getElementById("users").textContent = data.users;
-        document.getElementById("uptime").textContent = data.uptime;
-      } catch (err) {
-        document.getElementById("status").textContent = "❌ Offline";
-        console.debug('Stats fetch failed:', err);
-      }
+    // Check if user is already logged in, redirect to dashboard if they are
+    if (localStorage.getItem('discord_access_token')) {
+      window.location.href = 'dashboard.html';
     }
-    loadStats();
-    setInterval(loadStats, 15000);
-
-    // --- Dashboard / server management (in-browser simulation) ---
-    const backdrop = document.getElementById('dashboard-backdrop');
-    const openBtn = document.getElementById('open-dashboard');
-    const closeBtn = document.getElementById('close-dashboard');
-    const serverListEl = document.getElementById('server-list');
-  const addBtn = document.getElementById('add-server');
-  const resetBtn = document.getElementById('reset-servers');
-  const newNameInput = document.getElementById('new-server-name');
-  const newGuildInput = document.getElementById('new-server-guild');
-
-    // Minimal persistent store in localStorage
-    const STORAGE_KEY = 'dashboard_servers_v1';
-
-    function defaultServers(){
-      return [
-        {id: uid(), name: 'EU-1', guildId: '111111111111111111', status: 'running'},
-        {id: uid(), name: 'US-2', guildId: '222222222222222222', status: 'stopped'},
-        {id: uid(), name: 'ASIA-1', guildId: '333333333333333333', status: 'running'}
-      ];
-    }
-
-    function uid(){ return Math.random().toString(36).slice(2,9); }
-
-    function loadServers(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return defaultServers();
-        return JSON.parse(raw);
-      }catch(e){ return defaultServers(); }
-    }
-
-    function saveServers(list){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    }
-
-    function renderServers(){
-      const list = loadServers();
-      serverListEl.innerHTML = '';
-      let running = 0, stopped = 0;
-      list.forEach(s => {
-        const li = document.createElement('li');
-        li.className = 'server-item';
-        const meta = document.createElement('div'); meta.className = 'server-meta';
-        const name = document.createElement('div'); name.className = 'server-name'; name.textContent = s.name + (s.guildId ? ` — ${s.guildId}` : '');
-        const status = document.createElement('div'); status.className = 'server-status'; status.textContent = s.status === 'running' ? '🟢 running' : '⛔ stopped';
-        meta.appendChild(name); meta.appendChild(status);
-
-        const actions = document.createElement('div'); actions.className = 'server-actions';
-        const toggle = document.createElement('button'); toggle.className = 'btn small';
-        toggle.textContent = s.status === 'running' ? 'Stop' : 'Start';
-        toggle.onclick = () => { toggleServer(s.id); };
-        const remove = document.createElement('button'); remove.className = 'btn small'; remove.style.background = '#ff6b6b'; remove.textContent = 'Remove';
-        remove.onclick = () => { removeServer(s.id); };
-        actions.appendChild(toggle); actions.appendChild(remove);
-
-        li.appendChild(meta); li.appendChild(actions);
-        serverListEl.appendChild(li);
-
-        if(s.status === 'running') running++; else stopped++;
-      });
-
-      document.getElementById('stat-total').textContent = list.length;
-      document.getElementById('stat-running').textContent = running;
-      document.getElementById('stat-stopped').textContent = stopped;
-    }
-
-    function toggleServer(id){
-      const list = loadServers();
-      const idx = list.findIndex(s=>s.id===id); if(idx===-1) return;
-      list[idx].status = list[idx].status === 'running' ? 'stopped' : 'running';
-      saveServers(list); renderServers();
-    }
-
-    function addServer(name, guildId){
-      if(!name || !name.trim()) return alert('Please provide a server (guild) name');
-      const list = loadServers();
-      list.push({id: uid(), name: name.trim(), guildId: guildId ? guildId.trim() : '', status: 'stopped'});
-      saveServers(list); renderServers();
-      newNameInput.value = ''; document.getElementById('new-server-guild').value = '';
-    }
-
-    function removeServer(id){
-      let list = loadServers();
-      list = list.filter(s=>s.id!==id);
-      saveServers(list); renderServers();
-    }
-
-    function resetServers(){
-      if(!confirm('Reset servers to default sample list?')) return;
-      const defs = defaultServers(); saveServers(defs); renderServers();
-    }
-
-    // UI handlers
-    openBtn.addEventListener('click', ()=>{
-      backdrop.style.display = 'flex'; backdrop.setAttribute('aria-hidden','false'); renderServers();
-    });
-    closeBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
-    backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) { backdrop.style.display='none'; } });
-
-  addBtn.addEventListener('click', ()=> addServer(newNameInput.value, newGuildInput.value));
-  newNameInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') addServer(newNameInput.value, newGuildInput.value); });
-  newGuildInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') addServer(newNameInput.value, newGuildInput.value); });
-    resetBtn.addEventListener('click', resetServers);
-
-    // ensure there's some initial data
-    (function ensureInit(){ if(!localStorage.getItem(STORAGE_KEY)){ saveServers(defaultServers()); } })();
   </script>
 </body>
 </html>
