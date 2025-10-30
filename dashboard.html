@@ -298,7 +298,7 @@
     <div class="account-area">
       <button class="btn" id="add-server-btn" onclick="window.location.href='https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&permissions=8&scope=bot%20applications.commands'">Add to Server</button>
       <div id="user-container">
-        <img id="user-avatar" class="small-avatar" src="" alt=""> 
+        <img id="user-avatar" class="small-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="User Avatar"> 
         <span id="user-name" class="user-name-small"></span>
         <button onclick="logout()" class="btn danger">Logout</button>
       </div>
@@ -307,7 +307,7 @@
 
   <main>
     <div class="user-profile">
-      <img id="profile-avatar" class="avatar">
+      <img id="profile-avatar" class="avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Profile">
       <div class="profile-right">
         <div>
           <h2 id="profile-name">Loading...</h2>
@@ -338,16 +338,16 @@
       const token = localStorage.getItem('discord_access_token');
       
       rawEl.textContent = '=== Debug Profile State ===\n';
-      rawEl.textContent += `1. Token exists: ${Boolean(token)}\n`;
+      rawEl.textContent += '1. Token exists: ' + Boolean(token) + '\n';
       if (token) {
-        rawEl.textContent += `2. Token preview: ${token.slice(0, 10)}...\n`;
+        rawEl.textContent += '2. Token preview: ' + token.slice(0, 10) + '...\n';
         
         try {
           const response = await fetch(API_BASE + '/debug/env');
           const envData = await response.json();
-          rawEl.textContent += `3. Backend env check:\n${JSON.stringify(envData, null, 2)}\n`;
+          rawEl.textContent += '3. Backend env check:\n' + JSON.stringify(envData, null, 2) + '\n';
         } catch (e) {
-          rawEl.textContent += `3. Backend env check failed: ${e}\n`;
+          rawEl.textContent += '3. Backend env check failed: ' + e + '\n';
         }
         
         try {
@@ -358,9 +358,9 @@
             }
           });
           const text = await response.text();
-          rawEl.textContent += `4. Profile response (${response.status}):\n${text}\n`;
+          rawEl.textContent += '4. Profile response (' + response.status + '):\n' + text + '\n';
         } catch (e) {
-          rawEl.textContent += `4. Profile fetch failed: ${e}\n`;
+          rawEl.textContent += '4. Profile fetch failed: ' + e + '\n';
         }
       }
       
@@ -368,9 +368,9 @@
       rawEl.textContent += '\n5. Image elements:\n';
       imgs.forEach(img => {
         if (img) {
-          rawEl.textContent += `${img.id}: src=${img.src}\n`;
+          rawEl.textContent += img.id + ': src=' + img.src + '\n';
         } else {
-          rawEl.textContent += `${img.id}: NOT FOUND\n`;
+          rawEl.textContent += img.id + ': NOT FOUND\n';
         }
       });
     }
@@ -429,9 +429,11 @@
   </footer>
 
   <script>
-  // API base for backend proxy. Set to your Render backend so frontend calls the hosted API.
-  // Example: 'https://discord-bot-backend-zagt.onrender.com'
-  const API_BASE = 'https://discord-bot-backend-zagt.onrender.com';
+    // API base for backend proxy. Points to your Render backend.
+    window.API_BASE = 'https://discord-bot-backend-zagt.onrender.com';
+    
+    // For local development, uncomment this line instead:
+    // window.API_BASE = 'http://localhost:8080';
 
     // Check if user is authenticated. To avoid a race where the OAuth callback
     // has just written the access token to localStorage and redirected here,
@@ -445,7 +447,7 @@
       
       rawEl.textContent = '=== Authentication Check ===\n';
       let token = localStorage.getItem('discord_access_token');
-      rawEl.textContent += `Access token in localStorage: ${token ? token.slice(0,10) + '...' : 'Missing'}\n';
+      rawEl.textContent += 'Access token in localStorage: ' + (token ? token.slice(0,10) + '...' : 'Missing') + '\n';
 
       // If we have an authorization code (auth code flow) but no token, try to exchange it
       const authCode = localStorage.getItem('discord_auth_code');
@@ -526,7 +528,7 @@
         });
         if (!userRes.ok) {
           const errorText = await userRes.text();
-          rawEl.textContent += `Failed to fetch user: ${userRes.status} ${userRes.statusText}\nResponse: ${errorText}\n`;
+          rawEl.textContent += 'Failed to fetch user: ' + userRes.status + ' ' + userRes.statusText + '\nResponse: ' + errorText + '\n';
           throw new Error('Failed to fetch user');
         }
         const userData = await userRes.json();
@@ -534,10 +536,10 @@
         
         // Construct avatar URL with size parameter
         const avatarUrl = userData.avatar 
-          ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256` 
+          ? 'https://cdn.discordapp.com/avatars/' + userData.id + '/' + userData.avatar + '.png?size=256'
           : 'https://cdn.discordapp.com/embed/avatars/0.png';
         
-        rawEl.textContent += `Avatar URL: ${avatarUrl}\n`;
+        rawEl.textContent += 'Avatar URL: ' + avatarUrl + '\n';
         
         // Update all profile elements
         const userAvatar = document.getElementById('user-avatar');
