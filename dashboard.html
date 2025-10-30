@@ -15,14 +15,14 @@
       min-height: 100vh;
     }
     header {
-      background: rgba(14,14,16,0.95);
-      padding: 16px 24px;
+      background: #18151c;
+      padding: 12px 24px;
       font-size: 1.1em;
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #2D2D2F;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -35,7 +35,8 @@
     }
     .brand img {
       height: 32px;
-      width: auto;
+      width: 32px;
+      border-radius: 8px;
     }
     .btn {
       background: #5865F2;
@@ -47,14 +48,20 @@
       font-size: 14px;
       font-weight: 500;
       text-decoration: none;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
-    .btn:hover { background: #4752C4; }
+    .btn:hover { 
+      background: #4752C4;
+      transform: translateY(-1px);
+    }
     .btn.danger {
       background: #2D2D2F;
       border: 1px solid #3D3D3F;
     }
-    .btn.danger:hover { background: #3D3D3F; }
+    .btn.danger:hover { 
+      background: #3D3D3F;
+      border-color: #4D4D4F;
+    }
     /* Header nav and account styles matching desired layout */
     .main-nav {
       display: flex;
@@ -74,25 +81,56 @@
       padding: 32px 24px;
     }
     .user-profile {
-      background: #1f1c24;
-      border-radius: 16px;
-      padding: 24px;
+      background: #18151c;
+      border-radius: 10px;
       margin-bottom: 32px;
       display: flex;
-      align-items: center;
-      gap: 16px;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     .avatar {
       width: 96px;
       height: 96px;
       border-radius: 50%;
       background: #2D2D2F;
-      border: 4px solid rgba(255,255,255,0.03);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      border: 6px solid #18151c;
+      margin-top: -48px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
-    .profile-right { flex:1; display:flex; align-items:center; justify-content:space-between }
-    .profile-meta { color:#bdb6c2 }
-    .profile-cta .btn { border-radius:10px; padding:10px 16px; background:transparent; color:#caa4ff; border:2px solid rgba(202,164,255,0.25) }
+    .profile-right { 
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-top: 4px;
+    }
+    .profile-meta { 
+      color: #8e8e8e;
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+    #profile-name {
+      color: #fff;
+      font-size: 1.75em;
+      font-weight: 600;
+      margin: 0;
+    }
+    #goto-account {
+      background: #5865F2;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9em;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    #goto-account:hover {
+      background: #4752C4;
+    }
     .user-info h2 {
       margin: 0 0 4px 0;
       font-size: 1.5em;
@@ -115,39 +153,76 @@
       gap: 20px;
     }
     .server-card {
-      background: linear-gradient(180deg,#161617,#1c1c1f);
-      border-radius: 14px;
+      background: #18151c;
+      border-radius: 10px;
       padding: 0;
       display: flex;
       flex-direction: column;
       align-items: stretch;
       text-align: center;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.03);
+      transition: transform 0.2s;
     }
-    .server-banner { height:72px; background:#2b2b31; display:flex; align-items:center; justify-content:center; position:relative }
+    .server-card:hover {
+      transform: translateY(-2px);
+    }
+    .server-banner { 
+      height: 90px; 
+      background: #2b2b31; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      position: relative;
+      background: linear-gradient(180deg, #5865F2, #4752C4);
+    }
     .server-icon {
-      width:64px; height:64px; border-radius:12px; background:#2D2D2F; position:relative; top:12px; margin:0 auto; box-shadow:0 6px 18px rgba(0,0,0,0.5);
-      border:4px solid rgba(0,0,0,0.4); overflow:hidden;
+      width: 72px; 
+      height: 72px; 
+      border-radius: 16px; 
+      background: #18151c; 
+      position: relative; 
+      top: 24px; 
+      margin: 0 auto; 
+      overflow: hidden;
+      border: 6px solid #18151c;
     }
-    .server-card .server-body { padding:18px; }
+    .server-card .server-body { 
+      padding: 32px 20px 20px;
+    }
     .server-icon img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 8px;
     }
     .server-name {
       font-weight: 600;
       margin-bottom: 4px;
+      color: white;
+      font-size: 1.1em;
     }
     .member-count {
-      color: #89898B;
+      color: #8e8e8e;
       font-size: 0.9em;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
-    .server-actions { width:100%; display:flex; gap:12px; justify-content:center }
-    .server-actions .btn { width:80%; border-radius:10px; background: linear-gradient(90deg,#b565ff,#8a3cff); }
+    .server-actions { 
+      width: 100%; 
+      display: flex; 
+      justify-content: center;
+    }
+    .server-actions .btn { 
+      width: auto;
+      min-width: 140px;
+      border-radius: 4px;
+      background: #5865F2;
+      color: white;
+      font-weight: 500;
+      padding: 8px 20px;
+    }
+    .server-actions .btn:hover {
+      background: #4752C4;
+    }
     footer {
       padding: 20px;
       font-size: 0.9em;
@@ -315,30 +390,48 @@
     // has just written the access token to localStorage and redirected here,
     // we poll localStorage for a short period before giving up and redirecting.
     async function checkAuth() {
+      const rawEl = document.getElementById('raw-responses');
+      rawEl.textContent = 'Checking authentication...\n';
+      
       let token = localStorage.getItem('discord_access_token');
+      rawEl.textContent += `Access token in localStorage: ${token ? 'Present' : 'Missing'}\n`;
 
       // If we have an authorization code (auth code flow) but no token, try to exchange it
       const authCode = localStorage.getItem('discord_auth_code');
+      rawEl.textContent += `Auth code in localStorage: ${authCode ? 'Present' : 'Missing'}\n`;
+      
       if (!token && authCode) {
         try {
+          rawEl.textContent += 'Attempting to exchange auth code for token...\n';
           const resp = await fetch(API_BASE + '/oauth/exchange', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code: authCode, redirect_uri: window.location.origin + '/oauth-callback.html' })
           });
+          
+          rawEl.textContent += `Token exchange response status: ${resp.status}\n`;
+          const respText = await resp.text();
+          rawEl.textContent += `Token exchange response: ${respText}\n`;
+          
           if (resp.ok) {
-            const tokens = await resp.json();
-            // Save access token and continue
-            if (tokens.access_token) {
-              localStorage.setItem('discord_access_token', tokens.access_token);
-              token = tokens.access_token;
-              // optionally remove stored auth code
-              localStorage.removeItem('discord_auth_code');
+            try {
+              const tokenData = JSON.parse(respText);
+              if (tokenData.access_token) {
+                localStorage.setItem('discord_access_token', tokenData.access_token);
+                token = tokenData.access_token;
+                rawEl.textContent += 'Successfully got and saved access token\n';
+                localStorage.removeItem('discord_auth_code');
+              } else {
+                rawEl.textContent += 'Error: Token response missing access_token\n';
+              }
+            } catch (e) {
+              rawEl.textContent += `Error parsing token response: ${e}\n`;
             }
           } else {
-            console.warn('Token exchange failed', await resp.text());
+            rawEl.textContent += `Token exchange failed: ${resp.status} ${resp.statusText}\n`;
           }
         } catch (e) {
+          rawEl.textContent += `Exchange error: ${e}\n`;
           console.error('Exchange error', e);
         }
       }
@@ -356,9 +449,11 @@
       if (!token) {
         // No token after waiting — show a friendly login prompt instead of redirecting
         document.getElementById('profile-name').textContent = 'Not signed in';
-        document.getElementById('auth-status').innerHTML = '<a class="btn" href="login.html">Sign in with Discord</a>';
+        document.getElementById('auth-status').innerHTML = '<a class="btn primary" style="background: #5865F2; color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; display: inline-block;" href="login.html">Sign in with Discord</a>';
+        rawEl.textContent += 'No token available - displaying login button\n';
         return;
       }
+      rawEl.textContent += 'Token found - proceeding to load user data\n';
       loadUserData(token);
     }
 
@@ -378,18 +473,57 @@
           throw new Error('Failed to fetch user');
         }
         const userData = await userRes.json();
-        rawEl.textContent += 'User data fetched successfully.\n\n';        // Update UI with user data
+        rawEl.textContent += 'User data fetched successfully.\nUser data: ' + JSON.stringify(userData, null, 2) + '\n\n';
+        
+        // Construct avatar URL with size parameter
         const avatarUrl = userData.avatar 
-          ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` 
+          ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256` 
           : 'https://cdn.discordapp.com/embed/avatars/0.png';
-
-        document.getElementById('user-avatar').src = avatarUrl;
-        document.getElementById('user-name').textContent = userData.username;
-        document.getElementById('profile-avatar').src = avatarUrl;
-  document.getElementById('profile-name').textContent = userData.username;
+        
+        rawEl.textContent += `Avatar URL: ${avatarUrl}\n`;
+        
+        // Update all profile elements
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        
+        if (userAvatar) userAvatar.src = avatarUrl;
+        if (userName) userName.textContent = userData.username;
+        if (profileAvatar) profileAvatar.src = avatarUrl;
+        if (profileName) profileName.textContent = userData.username;
+        
+        // Add error handlers for images
+        [userAvatar, profileAvatar].forEach(img => {
+          if (img) {
+            img.onerror = () => {
+              rawEl.textContent += `Failed to load image: ${img.id}\n`;
+              img.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+            };
+            img.onload = () => {
+              rawEl.textContent += `Successfully loaded image: ${img.id}\n`;
+            };
+          }
+        });
   // show a tag/secondary name if available
-  document.getElementById('profile-tag').textContent = userData.discriminator ? `${userData.username}#${userData.discriminator}` : userData.username;
-  document.getElementById('profile-id').textContent = `ID: ${userData.id}`;
+        // Set profile tag and ID
+        const profileTag = document.getElementById('profile-tag');
+        const profileId = document.getElementById('profile-id');
+        
+        if (profileTag) {
+          // Handle both old and new Discord username systems
+          if (userData.discriminator && userData.discriminator !== '0') {
+            profileTag.textContent = `${userData.username}#${userData.discriminator}`;
+          } else if (userData.global_name) {
+            profileTag.textContent = userData.global_name;
+          } else {
+            profileTag.textContent = userData.username;
+          }
+        }
+        
+        if (profileId) {
+          profileId.textContent = `ID: ${userData.id}`;
+        }
 
         // Load user's guilds (via backend proxy)
         rawEl.textContent += `Fetching ${API_BASE}/oauth/guilds...\n`;
