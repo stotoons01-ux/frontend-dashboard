@@ -55,6 +55,18 @@
       border: 1px solid #3D3D3F;
     }
     .btn.danger:hover { background: #3D3D3F; }
+    /* Header nav and account styles matching desired layout */
+    .main-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-left: 24px;
+    }
+    .main-nav a { color: #ddd; text-decoration: none; }
+    .main-nav a.premium { color: #ff8b6b; }
+    .account-area { display:flex; gap:12px; align-items:center; }
+    .small-avatar { width:36px; height:36px; border-radius:50%; }
+    .user-name-small { margin-left:8px; color:#ddd; font-size:0.95em; }
     
     main {
       max-width: 1200px;
@@ -62,7 +74,7 @@
       padding: 32px 24px;
     }
     .user-profile {
-      background: #18181B;
+      background: #1f1c24;
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 32px;
@@ -71,11 +83,16 @@
       gap: 16px;
     }
     .avatar {
-      width: 64px;
-      height: 64px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
       background: #2D2D2F;
+      border: 4px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
     }
+    .profile-right { flex:1; display:flex; align-items:center; justify-content:space-between }
+    .profile-meta { color:#bdb6c2 }
+    .profile-cta .btn { border-radius:10px; padding:10px 16px; background:transparent; color:#caa4ff; border:2px solid rgba(202,164,255,0.25) }
     .user-info h2 {
       margin: 0 0 4px 0;
       font-size: 1.5em;
@@ -94,29 +111,27 @@
     }
     .servers-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
     }
     .server-card {
-      background: #18181B;
-      border-radius: 12px;
-      padding: 16px;
+      background: linear-gradient(180deg,#161617,#1c1c1f);
+      border-radius: 14px;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       text-align: center;
-    }
-    .server-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      background: #2D2D2F;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
     }
+    .server-banner { height:72px; background:#2b2b31; display:flex; align-items:center; justify-content:center; position:relative }
+    .server-icon {
+      width:64px; height:64px; border-radius:12px; background:#2D2D2F; position:relative; top:12px; margin:0 auto; box-shadow:0 6px 18px rgba(0,0,0,0.5);
+      border:4px solid rgba(0,0,0,0.4); overflow:hidden;
+    }
+    .server-card .server-body { padding:18px; }
     .server-icon img {
       width: 100%;
       height: 100%;
@@ -131,12 +146,8 @@
       font-size: 0.9em;
       margin-bottom: 16px;
     }
-    .server-actions {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .server-actions { width:100%; display:flex; gap:12px; justify-content:center }
+    .server-actions .btn { width:80%; border-radius:10px; background: linear-gradient(90deg,#b565ff,#8a3cff); }
     footer {
       padding: 20px;
       font-size: 0.9em;
@@ -199,12 +210,21 @@
   <header>
     <div class="brand">
       <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png" alt="Bot Avatar">
-      Whiteout Survival Bot
+      <span class="brand-title"></span>Whiteout Survival Bot</span>
     </div>
-    <div style="display: flex; gap: 16px; align-items: center;">
+
+    <nav class="main-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#">Documentation</a>
+      <a href="#">Support</a>
+      <a href="#" class="premium">Premium</a>
+    </nav>
+
+    <div class="account-area">
+      <button class="btn" id="add-server-btn" onclick="window.location.href='https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&permissions=8&scope=bot%20applications.commands'">Add to Server</button>
       <div id="user-container">
-        <img id="user-avatar" style="width: 32px; height: 32px; border-radius: 50%;">
-        <span id="user-name"></span>
+        <img id="user-avatar" class="small-avatar" src="" alt=""> 
+        <span id="user-name" class="user-name-small"></span>
         <button onclick="logout()" class="btn danger">Logout</button>
       </div>
     </div>
@@ -213,11 +233,15 @@
   <main>
     <div class="user-profile">
       <img id="profile-avatar" class="avatar">
-      <div class="user-info">
-        <h2 id="profile-name">Loading...</h2>
-        <div id="auth-status" style="color:#bdbdbf; margin-top:8px; font-size:0.95em;"></div>
-        <div class="user-tag" id="profile-tag"></div>
-        <div class="user-id" id="profile-id" style="color: #89898B; margin-top: 4px; font-size: 0.85em;"></div>
+      <div class="profile-right">
+        <div>
+          <h2 id="profile-name">Loading...</h2>
+          <div class="profile-meta"><span id="profile-tag"></span> <span id="profile-id" style="margin-left:12px;"> </span></div>
+        </div>
+        <div class="profile-cta">
+          <div id="auth-status" style="color:#bdbdbf; margin-top:8px; font-size:0.95em;"></div>
+          <div style="margin-top:6px"><a class="btn" href="#" id="goto-account">Go to your account</a></div>
+        </div>
       </div>
     </div>
 
@@ -341,9 +365,10 @@
         document.getElementById('user-avatar').src = avatarUrl;
         document.getElementById('user-name').textContent = userData.username;
         document.getElementById('profile-avatar').src = avatarUrl;
-        document.getElementById('profile-name').textContent = userData.username;
-        document.getElementById('profile-tag').textContent = userData.username;
-        document.getElementById('profile-id').textContent = `ID: ${userData.id}`;
+  document.getElementById('profile-name').textContent = userData.username;
+  // show a tag/secondary name if available
+  document.getElementById('profile-tag').textContent = userData.discriminator ? `${userData.username}#${userData.discriminator}` : userData.username;
+  document.getElementById('profile-id').textContent = `ID: ${userData.id}`;
 
         // Load user's guilds (via backend proxy)
         const guildsRes = await fetch(API_BASE + '/oauth/guilds', {
@@ -352,8 +377,29 @@
         if (!guildsRes.ok) throw new Error('Failed to fetch guilds');
         const guilds = await guildsRes.json();
 
-        // Render guild list
-        renderServers(guilds);
+        // Ask backend which of these guilds the bot is present in, then render only those
+        try {
+          const guildIds = guilds.map(g => g.id);
+          const botRes = await fetch(API_BASE + '/bot/guilds_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ guild_ids: guildIds })
+          });
+          if (botRes.ok) {
+            const botData = await botRes.json();
+            const presentSet = new Set(botData.present || []);
+            const filtered = guilds.filter(g => presentSet.has(String(g.id)));
+            renderServers(filtered);
+          } else {
+            console.warn('Bot presence check failed', await botRes.text());
+            // Fallback: render all guilds
+            renderServers(guilds);
+          }
+        } catch (e) {
+          console.error('Error checking bot presence', e);
+          // Fallback: render all guilds
+          renderServers(guilds);
+        }
 
       } catch (err) {
         console.error('Auth check failed:', err);
@@ -376,24 +422,25 @@
       guilds.forEach(guild => {
         const card = document.createElement('div');
         card.className = 'server-card';
-        
+
         const icon = guild.icon 
           ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
           : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
         card.innerHTML = `
-          <div class="server-icon">
-            <img src="${icon}" alt="${guild.name}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+          <div class="server-banner">
+            <div class="server-icon">
+              <img src="${icon}" alt="${guild.name}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            </div>
           </div>
-          <div class="server-name">${guild.name}</div>
-          <div class="member-count">Server ID: ${guild.id}</div>
-          <div class="server-actions">
-            <button onclick="manageServer('${guild.id}', '${guild.name}')" class="btn">
-              Manage Server
-            </button>
-            <button onclick="removeBot('${guild.id}')" class="btn danger">
-              Remove Bot
-            </button>
+          <div class="server-body">
+            <div class="server-name">${guild.name}</div>
+            <div class="member-count">${guild.member_count ? guild.member_count + ' Members' : 'Server ID: ' + guild.id}</div>
+            <div class="server-actions">
+              <button onclick="manageServer('${guild.id}', '${guild.name.replace(/'/g, "\\'")}')" class="btn">
+                Manage Server
+              </button>
+            </div>
           </div>
         `;
         serversList.appendChild(card);
