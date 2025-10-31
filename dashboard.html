@@ -386,12 +386,22 @@
         const url = CONFIG.API_BASE + endpoint;
         Debug.log(`Fetching: ${url}`);
         
+        const token = localStorage.getItem('discord_access_token');
+        if (!token && endpoint !== '/debug/env') {
+          throw new Error('No access token found');
+        }
+
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
         
         try {
           const response = await fetch(url, {
             ...options,
+            headers: {
+              ...options.headers,
+              'Authorization': token ? `Bearer ${token}` : undefined,
+              'Accept': 'application/json'
+            },
             signal: controller.signal
           });
           
@@ -423,24 +433,15 @@
         }
       },
 
-      async getProfile(token) {
-        return this.fetch('/oauth/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-          }
-        });
+      getProfile() {
+        return this.fetch('/oauth/me');
       },
 
-      async getGuilds(token) {
-        return this.fetch('/oauth/guilds', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+      getGuilds() {
+        return this.fetch('/oauth/guilds');
       },
 
-      async getBotStatus(guildIds) {
+      getBotStatus(guildIds) {
         return this.fetch('/bot/guilds_status', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -547,38 +548,40 @@
       Debug.clear();
       Debug.log('Starting authentication check');
       
-      let token = localStorage.getItem('discord_access_token');
+      const token = localStorage.getItem('discord_access_token');
       Debug.log('Token exists:', Boolean(token));
 
       if (!token) {
         UI.setLoginPrompt();
-        return;
+        return false;
       }
 
       try {
-        await loadUserData(token);
+        await loadUserData();
+        return true;
       } catch (error) {
         Debug.error('Authentication failed', error);
-        if (error.message.includes('401') || error.message.includes('invalid')) {
+        if (error.message.includes('401') || error.message.includes('invalid') || error.message.includes('No access token')) {
           localStorage.removeItem('discord_access_token');
           UI.setLoginPrompt();
         } else {
           UI.setErrorState('Failed to load profile. Please try again.');
         }
+        return false;
       }
     }
 
-    async function loadUserData(token) {
+    async function loadUserData() {
       UI.setLoadingState();
       Debug.log('Loading user data');
 
       try {
         // Load user profile
-        const userData = await API.getProfile(token);
+        const userData = await API.getProfile();
         UI.setProfileData(userData);
         
         // Load guilds
-        const guilds = await API.getGuilds(token);
+        const guilds = await API.getGuilds();
         Debug.log('Loaded guilds:', guilds.length);
         
         // Check bot presence
@@ -594,6 +597,7 @@
         }
         
         UI.renderServers(guilds, botPresence);
+        return true;
         
       } catch (error) {
         Debug.error('Failed to load user data', error);
@@ -610,25 +614,20 @@
       Debug.log('Token exists:', Boolean(token));
       Debug.log('Token preview:', token ? token.slice(0,10) + '...' : 'null');
       
-      // Check backend connection
-      fetch(CONFIG.API_BASE + '/debug/env')
-        .then(r => r.json())
-        .then(data => Debug.log('Backend env:', data))
-        .catch(e => Debug.error('Backend connection failed', e));
-      
-      // Log UI state
+      // Check UI state
       Debug.log('UI Elements:');
       ['user-avatar', 'profile-avatar', 'profile-name', 'auth-status'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) {
-          Debug.log(`${id}:`, {
-            exists: true,
-            content: el.tagName === 'IMG' ? el.src : el.textContent
-          });
-        } else {
-          Debug.log(`${id}: not found`);
-        }
+        Debug.log(`${id}:`, el ? {
+          exists: true,
+          content: el.tagName === 'IMG' ? el.src : el.textContent
+        } : 'not found');
       });
+      
+      // Check backend connection
+      API.fetch('/debug/env')
+        .then(data => Debug.log('Backend env:', data))
+        .catch(error => Debug.error('Backend connection failed', error));
     }
 
     function logout() {
@@ -636,14 +635,9 @@
       window.location.href = 'index.html';
     }
 
-    function updateProfileUI(data) {
-      if (!data || data.error) return;
-      const avatarUrl = data.avatar
-        ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`
-        : 'https://cdn.discordapp.com/embed/avatars/0.png';
-      const userAvatar = document.getElementById('user-avatar');
-      if (userAvatar) userAvatar.src = avatarUrl;
-      const profileAvatar = document.getElementById('profile-avatar');
-      if (profileAvatar) profileAvatar.src = avatarUrl;
-      const profileName = document.getElementById('profile-name');
-      if
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuth().catch(error => {
+        Debug.error('Failed to initialize', error);
+      });
+    });
