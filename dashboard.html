@@ -636,48 +636,14 @@
       window.location.href = 'index.html';
     }
 
-    function renderServers(servers) {
-      const container = document.getElementById('servers-list');
-      container.innerHTML = '';
-      if (!servers || !servers.length) {
-        container.innerHTML = '<div>No servers found.</div>';
-        return;
-      }
-      servers.forEach(guild => {
-        const iconUrl = guild.icon
-          ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
-          : 'https://cdn.discordapp.com/embed/avatars/0.png';
-        const card = document.createElement('div');
-        card.className = 'server-card';
-        card.innerHTML = `
-          <div class="server-icon"><img src="${iconUrl}" alt="${guild.name}" style="width:64px;height:64px;border-radius:50%;background:#23232a;"></div>
-          <div class="server-name" style="margin-top:10px;font-weight:600;">${guild.name}</div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function fetchAndRenderServers() {
-      const token = localStorage.getItem('discord_token');
-      if (!token) return;
-      fetch(CONFIG.API_BASE + '/oauth/guilds', {
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          renderServers(data);
-        }
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', fetchUserProfile);
-    window.addEventListener('DOMContentLoaded', fetchAndRenderServers);
-
-    // Initialize
-    checkAuth();
-  </script>
-</body>
-</html>
+    function updateProfileUI(data) {
+      if (!data || data.error) return;
+      const avatarUrl = data.avatar
+        ? `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`
+        : 'https://cdn.discordapp.com/embed/avatars/0.png';
+      const userAvatar = document.getElementById('user-avatar');
+      if (userAvatar) userAvatar.src = avatarUrl;
+      const profileAvatar = document.getElementById('profile-avatar');
+      if (profileAvatar) profileAvatar.src = avatarUrl;
+      const profileName = document.getElementById('profile-name');
+      if
