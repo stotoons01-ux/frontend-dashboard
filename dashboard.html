@@ -430,11 +430,43 @@
 
     <script>
     // API base for backend proxy. Points to your Render backend.
-    const API_BASE = 'https://discord-bot-backend-zagt.onrender.com';
+    // Use localhost for testing
+    const API_BASE = 'http://localhost:8080';
     window.API_BASE = API_BASE; // Also set on window for global access
+
+// Add global fetch wrapper for debugging
+window.debugFetch = async (url, options = {}) => {
+  const rawEl = document.getElementById('raw-responses');
+  rawEl.textContent += `\nFetching ${url}...\n`;
+  
+  try {
+    const response = await fetch(url, options);
+    rawEl.textContent += `Status: ${response.status} ${response.statusText}\n`;
     
-    // For local development, uncomment these lines instead:
-    // const API_BASE = 'http://localhost:8080';
+    const text = await response.text();
+    rawEl.textContent += `Response: ${text}\n`;
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    try {
+      return { 
+        ...response, 
+        json: () => Promise.resolve(JSON.parse(text))
+      };
+    } catch (e) {
+      rawEl.textContent += `Error parsing JSON: ${e}\n`;
+      throw e;
+    }
+  } catch (e) {
+    rawEl.textContent += `Fetch error: ${e}\n`;
+    throw e;
+  }
+};
+    
+    // For production, use this instead:
+    // const API_BASE = 'https://discord-bot-backend-zagt.onrender.com';
     // window.API_BASE = API_BASE;
     
     // Global error handler for fetch operations
@@ -528,14 +560,19 @@
     }
 
       async function loadUserData(token) {
-      const rawEl = document.getElementById('raw-responses');
-      rawEl.textContent = '=== Loading User Profile ===\n';
+        const rawEl = document.getElementById('raw-responses');
+        rawEl.textContent = '=== Loading User Profile ===\n';
+        console.log('Starting loadUserData with token:', token ? token.slice(0,10) + '...' : 'null');
 
-      // Clear any previous error states
-      const profileName = document.getElementById('profile-name');
-      const authStatus = document.getElementById('auth-status');
-      if (profileName) profileName.textContent = 'Loading...';
-      if (authStatus) authStatus.textContent = '';
+        // Clear any previous error states
+        const profileName = document.getElementById('profile-name');
+        const authStatus = document.getElementById('auth-status');
+        if (profileName) profileName.textContent = 'Loading...';
+        if (authStatus) authStatus.textContent = '';
+        
+        // Update debug panel
+        rawEl.textContent += `API Base URL: ${API_BASE}\n`;
+        rawEl.textContent += `Token length: ${token ? token.length : 0}\n`;
 
       try {
           // Validate token format
@@ -577,11 +614,11 @@
         }
 
         const userData = await userRes.json();
-        if (!userData || !userData.id) {
-          throw new Error('Invalid user data received');
-        rawEl.textContent += 'User data fetched successfully.\nUser data: ' + JSON.stringify(userData, null, 2) + '\n\n';
-        
-        // Construct avatar URL with size parameter and fallback
+          if (!userData || !userData.id) {
+            throw new Error('Invalid user data received');
+          }
+          
+          rawEl.textContent += 'User data fetched successfully.\nUser data: ' + JSON.stringify(userData, null, 2) + '\n\n';        // Construct avatar URL with size parameter and fallback
         const avatarUrl = userData.avatar 
           ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`
           : 'https://cdn.discordapp.com/embed/avatars/0.png';
