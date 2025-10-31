@@ -434,6 +434,15 @@
     const API_BASE = 'http://localhost:8080';
     window.API_BASE = API_BASE; // Also set on window for global access
 
+    // Global error handler
+    window.onerror = function(msg, url, line) {
+        const rawEl = document.getElementById('raw-responses');
+        if (rawEl) {
+            rawEl.textContent += `\nError: ${msg}\nAt: ${url}:${line}\n`;
+        }
+        return false;
+    };
+
 // Add global fetch wrapper for debugging
 window.debugFetch = async (url, options = {}) => {
   const rawEl = document.getElementById('raw-responses');
@@ -573,6 +582,8 @@ window.debugFetch = async (url, options = {}) => {
         // Update debug panel
         rawEl.textContent += `API Base URL: ${API_BASE}\n`;
         rawEl.textContent += `Token length: ${token ? token.length : 0}\n`;
+        
+        try {
 
       try {
           // Validate token format
@@ -742,7 +753,6 @@ window.debugFetch = async (url, options = {}) => {
           renderServers(guilds, document.getElementById('servers-list-present'));
           document.getElementById('servers-list-missing').innerHTML = '';
         }
-
       } catch (err) {
         console.error('Auth check failed:', err);
         const errorMessage = err.message || 'Unknown error occurred';
@@ -785,6 +795,7 @@ window.debugFetch = async (url, options = {}) => {
     // and missing lists separately.
     function renderServers(guilds, targetEl) {
       if (!targetEl) targetEl = document.getElementById('servers-list');
+      if (!targetEl) return;
       targetEl.innerHTML = '';
 
       if (!guilds || !guilds.length) {
@@ -855,6 +866,7 @@ window.debugFetch = async (url, options = {}) => {
 
     // Initialize
     checkAuth();
+    })();
   </script>
 </body>
 </html>
