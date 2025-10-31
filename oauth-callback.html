@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html><!DOCTYPE html><!DOCTYPE html><!doctype html>
+<!DOCTYPE html><!DOCTYPE html><!DOCTYPE html><!DOCTYPE html><!DOCTYPE html><!doctype html>
 
 <html lang="en">
 
@@ -14,7 +14,7 @@
 
         body {
 
-            font-family: "Segoe UI", Arial, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0"><head><html lang="en"><html lang="en">
+            font-family: "Segoe UI", Arial, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0"><head><html lang="en">
 
             background: #0E0E10;
 
@@ -30,7 +30,7 @@
 
             align-items: center;
 
-            justify-content: center;            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0"><head><head>
+            justify-content: center;            font-family: "Segoe UI", Arial, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0"><head><html lang="en"><html lang="en">
 
             text-align: center;
 
@@ -46,11 +46,11 @@
 
             margin: 20px;
 
-            max-width: 500px;            padding: 0;    <style>    <meta charset="UTF-8">  <meta charset="utf-8">
+            max-width: 500px;            padding: 0;    <style>    <meta charset="UTF-8">
 
             width: 100%;
 
-        }            height: 100vh;
+        }            min-height: 100vh;
 
         .spinner {
 
@@ -62,7 +62,7 @@
 
             width: 40px;
 
-            height: 40px;            justify-content: center;            font-family: "Segoe UI", Arial, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <meta name="viewport" content="width=device-width,initial-scale=1">
+            height: 40px;            justify-content: center;            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0"><head><head>
 
             animation: spin 1s linear infinite;
 
@@ -78,11 +78,11 @@
 
         }
 
-        .error-link {            background: #18181b;            color: #fff;    <title>Auth Callback - Whiteout Survival Bot</title>  <title>OAuth Callback — Whiteout Bot Dashboard</title>
+        .error-link {            background: #18151c;            color: #fff;    <title>Auth Callback - Whiteout Survival Bot</title>
 
             color: #5865F2;
 
-            text-decoration: none;            padding: 2rem;
+            text-decoration: none;            padding: 20px;
 
             margin-top: 20px;
 
@@ -90,24 +90,133 @@
 
         }
 
-        .error-link:hover {            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .error-link:hover {            margin: 20px;
 
             text-decoration: underline;
 
-        }            max-width: 90%;            padding: 20px;    <style>  <style>
+        }            max-width: 500px;            padding: 0;    <style>    <meta charset="UTF-8">  <meta charset="utf-8">
 
     </style>
 
-</head>            width: 400px;
+</head>            width: 100%;
 
 <body>
 
-    <div class="container" id="content">        }            min-height: 100vh;
+    <div class="container" id="content">        }            height: 100vh;
 
         <div class="spinner"></div>
 
-        <h2>Authenticating...</h2>        h1 {
+        <h2>Authenticating...</h2>        .spinner {
 
+        <p>Please wait while we complete your sign in.</p>
+
+    </div>            border: 4px solid rgba(255, 255, 255, 0.1);            display: flex;        body {
+
+    <script>
+
+        async function handleCallback() {            border-radius: 50%;
+
+            const content = document.getElementById('content');
+
+            try {            border-top: 4px solid #5865F2;            align-items: center;
+
+                const urlParams = new URLSearchParams(window.location.search);
+
+                const code = urlParams.get('code');            width: 40px;
+
+                if (!code) {
+
+                    content.innerHTML = `            height: 40px;            justify-content: center;            font-family: "Segoe UI", Arial, sans-serif;    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+                        <h2>Authentication Error</h2>
+
+                        <p>No authorization code received. Please try again.</p>            animation: spin 1s linear infinite;
+
+                        <a href="/dashboard.html" class="error-link">Return to Dashboard</a>
+
+                    `;            margin: 20px auto;            text-align: center;
+
+                    return;
+
+                }        }
+
+                // Exchange the code for tokens through your backend
+
+                const response = await fetch('https://whiteout-survival-bot.onrender.com/auth/callback', {        @keyframes spin {        }            background: #0E0E10;
+
+                    method: 'POST',
+
+                    headers: {            0% { transform: rotate(0deg); }
+
+                        'Content-Type': 'application/json'
+
+                    },            100% { transform: rotate(360deg); }        .container {
+
+                    body: JSON.stringify({ code })
+
+                });        }
+
+                if (!response.ok) {
+
+                    content.innerHTML = `        .error-link {            background: #18181b;            color: #fff;    <title>Auth Callback - Whiteout Survival Bot</title>  <title>OAuth Callback — Whiteout Bot Dashboard</title>
+
+                        <h2>OAuth Error</h2>
+
+                        <p>Failed to exchange code for token.</p>            color: #5865F2;
+
+                        <a href="/dashboard.html" class="error-link">Return to Dashboard</a>
+
+                    `;            text-decoration: none;            padding: 2rem;
+
+                    return;
+
+                }            margin-top: 20px;
+
+                const data = await response.json();
+
+                if (!data.access_token) {            display: inline-block;            border-radius: 8px;            margin: 0;
+
+                    content.innerHTML = `
+
+                        <h2>Authentication Error</h2>        }
+
+                        <p>No access token received. Check your backend implementation.</p>
+
+                        <a href="/dashboard.html" class="error-link">Return to Dashboard</a>        .error-link:hover {            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+                    `;
+
+                    return;            text-decoration: underline;
+
+                }
+
+                localStorage.setItem('discord_token', data.access_token);        }            max-width: 90%;            padding: 20px;    <style>  <style>
+
+                window.location.href = '/dashboard.html';
+
+            } catch (error) {    </style>
+
+                content.innerHTML = `
+
+                    <h2>Authentication Error</h2></head>            width: 400px;
+
+                    <p>${error.message || 'There was a problem signing you in. Please try again.'}</p>
+
+                    <a href="/dashboard.html" class="error-link">Return to Dashboard</a><body>
+
+                `;
+
+            }    <div class="container" id="content">        }            min-height: 100vh;
+
+        }
+
+        handleCallback();        <div class="spinner"></div>
+
+    </script>
+
+</body>        <h2>Authenticating...</h2>        h1 {
+
+</html>
         <p>Please wait while we complete your sign in.</p>
 
     </div>            margin: 0 0 1rem;            display: flex;        body {    body{ font-family: "Segoe UI", Arial, sans-serif; background:linear-gradient(135deg,#071021,#0b1220); color:#e6f7ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
