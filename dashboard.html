@@ -433,9 +433,26 @@
     const API_BASE = 'https://discord-bot-backend-zagt.onrender.com';
     window.API_BASE = API_BASE; // Also set on window for global access
     
-    // For local development, uncomment this line instead:
+    // For local development, uncomment these lines instead:
     // const API_BASE = 'http://localhost:8080';
-    // window.API_BASE = API_BASE;    // Check if user is authenticated. To avoid a race where the OAuth callback
+    // window.API_BASE = API_BASE;
+    
+    // Global error handler for fetch operations
+    window.handleFetchError = async (response, context) => {
+      const errorText = await response.text();
+      console.error(`${context} failed:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      
+      if (response.status === 401) {
+        localStorage.removeItem('discord_access_token');
+        throw new Error('Authentication expired. Please sign in again.');
+      }
+      
+      throw new Error(`${context} failed: ${response.status} ${response.statusText}`);
+    };    // Check if user is authenticated. To avoid a race where the OAuth callback
     // has just written the access token to localStorage and redirected here,
     // we poll localStorage for a short period before giving up and redirecting.
     async function checkAuth() {
@@ -511,16 +528,16 @@
     }
 
       async function loadUserData(token) {
-        const rawEl = document.getElementById('raw-responses');
-        rawEl.textContent = '=== Loading User Profile ===\n';
+      const rawEl = document.getElementById('raw-responses');
+      rawEl.textContent = '=== Loading User Profile ===\n';
 
-        // Clear any previous error states
-        const profileName = document.getElementById('profile-name');
-        const authStatus = document.getElementById('auth-status');
-        if (profileName) profileName.textContent = 'Loading...';
-        if (authStatus) authStatus.textContent = '';
+      // Clear any previous error states
+      const profileName = document.getElementById('profile-name');
+      const authStatus = document.getElementById('auth-status');
+      if (profileName) profileName.textContent = 'Loading...';
+      if (authStatus) authStatus.textContent = '';
 
-        try {
+      try {
           // Validate token format
           if (!token || typeof token !== 'string' || token.length < 30) {
             throw new Error('Invalid token format');
