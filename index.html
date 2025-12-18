@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Whiteout Survival Bot</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       background: #0E0E10;
@@ -16,6 +20,7 @@
       display: flex;
       flex-direction: column;
     }
+
     header {
       padding: 20px;
       display: flex;
@@ -23,6 +28,7 @@
       align-items: center;
       border-bottom: 1px solid #2D2D2F;
     }
+
     .brand {
       display: flex;
       align-items: center;
@@ -30,11 +36,13 @@
       font-size: 1.2em;
       font-weight: 600;
     }
+
     .brand img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
     }
+
     .hero {
       flex: 1;
       display: flex;
@@ -43,25 +51,30 @@
       text-align: center;
       padding: 40px 20px;
     }
+
     .hero-content {
       max-width: 600px;
     }
+
     .bot-avatar {
       width: 128px;
       height: 128px;
       border-radius: 50%;
       margin-bottom: 24px;
     }
+
     h1 {
       font-size: 2.5em;
       margin: 0 0 16px 0;
     }
+
     .description {
       color: #89898B;
       font-size: 1.1em;
       margin-bottom: 32px;
       line-height: 1.6;
     }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -75,13 +88,16 @@
       font-weight: 500;
       transition: background 0.2s;
     }
+
     .btn:hover {
       background: #4752C4;
     }
+
     .discord-icon {
       width: 24px;
       height: 24px;
     }
+
     footer {
       padding: 20px;
       font-size: 0.9em;
@@ -91,16 +107,20 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
-      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png" alt="Bot Avatar">
-      Whiteout Survival Bot
+      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png"
+        alt="Bot Avatar">
+      Whiteout Survival Bot <span
+        style="background: #5865F2; padding: 4px 10px; border-radius: 15px; font-size: 0.7em; margin-left: 8px;">v2.0</span>
     </div>
     <div>
-      <a href="https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&redirect_uri=https%3A%2F%2Fwhiteout-survival.vercel.app%2Foauth-callback.html&response_type=code&scope=identify%20guilds" class="btn">
+      <a href="login.html" class="btn">
         <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/>
+          <path
+            d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z" />
         </svg>
         Login with Discord
       </a>
@@ -109,15 +129,21 @@
 
   <main class="hero">
     <div class="hero-content">
-      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png" alt="Bot Avatar" class="bot-avatar">
-      <h1>Whiteout Survival Bot</h1>
+      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png"
+        alt="Bot Avatar" class="bot-avatar">
+      <h1>Whiteout Survival Bot <span
+          style="background: linear-gradient(135deg, #5865F2, #3ba55c); padding: 6px 14px; border-radius: 20px; font-size: 0.4em; margin-left: 8px; box-shadow: 0 2px 8px rgba(88,101,242,0.4);">✨
+          v2.0 ENHANCED</span></h1>
       <div class="description">
-        A powerful Discord bot designed to enhance your Whiteout Survival gaming experience. Login to manage your bot servers and customize settings for your Discord community.
+        🎉 <strong>NEW ENHANCED DASHBOARD IS LIVE!</strong><br>
+        ✅ Birthday Management • 🎁 Gift Code Tracking • 📊 Real-time Statistics<br>
+        Manage all your bot features in one beautiful, intuitive interface!
       </div>
       <div>
-        <a href="https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&redirect_uri=https%3A%2F%2Fwhiteout-survival.vercel.app%2Foauth-callback.html&response_type=code&scope=identify%20guilds" class="btn">
+        <a href="login.html" class="btn">
           <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/>
+            <path
+              d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z" />
           </svg>
           Get Started
         </a>
@@ -136,4 +162,5 @@
     }
   </script>
 </body>
+
 </html>

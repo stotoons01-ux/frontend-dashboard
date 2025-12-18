@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Whiteout Survival Bot</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       background: #0E0E10;
@@ -14,6 +18,7 @@
       padding: 0;
       min-height: 100vh;
     }
+
     header {
       background: #18151c;
       padding: 12px 24px;
@@ -22,22 +27,25 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       position: sticky;
       top: 0;
       z-index: 100;
     }
-    .brand { 
+
+    .brand {
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
     .brand img {
       height: 32px;
       width: 32px;
       border-radius: 8px;
     }
+
     .btn {
       background: #5865F2;
       color: #fff;
@@ -50,35 +58,62 @@
       text-decoration: none;
       transition: all 0.2s;
     }
-    .btn:hover { 
+
+    .btn:hover {
       background: #4752C4;
       transform: translateY(-1px);
     }
+
     .btn.danger {
       background: #2D2D2F;
       border: 1px solid #3D3D3F;
     }
-    .btn.danger:hover { 
+
+    .btn.danger:hover {
       background: #3D3D3F;
       border-color: #4D4D4F;
     }
+
     .main-nav {
       display: flex;
       gap: 20px;
       align-items: center;
       margin-left: 24px;
     }
-    .main-nav a { color: #ddd; text-decoration: none; }
-    .main-nav a.premium { color: #ff8b6b; }
-    .account-area { display:flex; gap:12px; align-items:center; }
-    .small-avatar { width:36px; height:36px; border-radius:50%; }
-    .user-name-small { margin-left:8px; color:#ddd; font-size:0.95em; }
-    
+
+    .main-nav a {
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    .main-nav a.premium {
+      color: #ff8b6b;
+    }
+
+    .account-area {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .small-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .user-name-small {
+      margin-left: 8px;
+      color: #ddd;
+      font-size: 0.95em;
+    }
+
     main {
       max-width: 1200px;
       margin: 0 auto;
       padding: 32px 24px;
     }
+
     .user-profile {
       background: #18151c;
       border-radius: 10px;
@@ -87,8 +122,9 @@
       align-items: flex-start;
       gap: 24px;
       padding: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
+
     .avatar {
       width: 96px;
       height: 96px;
@@ -96,26 +132,30 @@
       background: #2D2D2F;
       border: 6px solid #18151c;
       margin-top: -48px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
-    .profile-right { 
+
+    .profile-right {
       flex: 1;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       padding-top: 4px;
     }
-    .profile-meta { 
+
+    .profile-meta {
       color: #8e8e8e;
       font-size: 0.9em;
       margin-top: 4px;
     }
+
     #profile-name {
       color: #fff;
       font-size: 1.75em;
       font-weight: 600;
       margin: 0;
     }
+
     #goto-account {
       background: #5865F2;
       color: white;
@@ -127,19 +167,23 @@
       display: inline-block;
       transition: background 0.2s;
     }
+
     #goto-account:hover {
       background: #4752C4;
     }
+
     .section-title {
       font-size: 1.5em;
       margin: 0 0 20px 0;
       font-weight: 600;
     }
+
     .servers-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 20px;
     }
+
     .server-card {
       background: #18151c;
       border-radius: 10px;
@@ -151,48 +195,56 @@
       overflow: hidden;
       transition: transform 0.2s;
     }
+
     .server-card:hover {
       transform: translateY(-2px);
     }
-    .server-banner { 
-      height: 90px; 
+
+    .server-banner {
+      height: 90px;
       background: linear-gradient(180deg, #5865F2, #4752C4);
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
     }
+
     .server-icon {
-      width: 72px; 
-      height: 72px; 
-      border-radius: 16px; 
-      background: #18151c; 
-      position: relative; 
-      top: 24px; 
-      margin: 0 auto; 
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: #18151c;
+      position: relative;
+      top: 24px;
+      margin: 0 auto;
       overflow: hidden;
       border: 6px solid #18151c;
     }
+
     .server-icon img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 8px;
     }
-    .server-body { 
+
+    .server-body {
       padding: 32px 20px 20px;
     }
+
     .server-name {
       font-weight: 600;
       margin-bottom: 4px;
       color: white;
       font-size: 1.1em;
     }
+
     .member-count {
       color: #8e8e8e;
       font-size: 0.9em;
       margin-bottom: 20px;
     }
+
     footer {
       padding: 20px;
       font-size: 0.9em;
@@ -200,17 +252,20 @@
       text-align: center;
       border-top: 1px solid #2D2D2F;
     }
+
     #debug-panel {
       margin: 20px 0;
       background: #18151c;
       border-radius: 6px;
       overflow: hidden;
     }
+
     #debug-panel summary {
       padding: 12px 16px;
       cursor: pointer;
       background: #1f1c24;
     }
+
     #debug-panel pre {
       margin: 0;
       padding: 16px;
@@ -222,6 +277,7 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+
     @media (max-width: 768px) {
       header {
         flex-direction: column;
@@ -229,25 +285,30 @@
         padding: 12px;
         gap: 12px;
       }
+
       .main-nav {
         margin: 0;
         overflow-x: auto;
         padding: 4px 0;
       }
+
       .account-area {
         justify-content: space-between;
         padding-top: 8px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
+
       .user-profile {
         flex-direction: column;
         align-items: center;
         text-align: center;
         padding-top: 48px;
       }
+
       .avatar {
         margin-top: 0;
       }
+
       .profile-right {
         flex-direction: column;
         align-items: center;
@@ -256,10 +317,12 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
-      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png" alt="Bot Avatar">
+      <img src="https://cdn.discordapp.com/avatars/1399025185046134866/0b02020a0f6e2c4effffa9e9502f427c.png"
+        alt="Bot Avatar">
       <span>Whiteout Survival Bot</span>
     </div>
 
@@ -271,9 +334,12 @@
     </nav>
 
     <div class="account-area">
-      <button class="btn" onclick="window.location.href='https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&permissions=8&scope=bot%20applications.commands'">Add to Server</button>
+      <button class="btn"
+        onclick="window.location.href='https://discord.com/api/oauth2/authorize?client_id=1399025185046134866&permissions=8&scope=bot%20applications.commands'">Add
+        to Server</button>
       <div id="user-container">
-        <img id="user-avatar" class="small-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="User Avatar">
+        <img id="user-avatar" class="small-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="User Avatar">
         <span id="user-name" class="user-name-small"></span>
         <button onclick="logout()" class="btn danger">Logout</button>
       </div>
@@ -324,7 +390,7 @@
   <script>
     // Configuration
     const CONFIG = {
-      API_BASE: 'https://discord-bot-backend-zagt.onrender.com',
+      API_BASE: 'https://whiteout-survival-backend.onrender.com', // Replace with your actual Render/production backend URL
       BOT_CLIENT_ID: '1399025185046134866',
       DEFAULT_AVATAR: 'https://cdn.discordapp.com/embed/avatars/0.png',
       TIMEOUT_MS: 10000
@@ -348,10 +414,10 @@
 
       log(message, data = null) {
         if (!this.element) return;
-        
+
         const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
         let text = `[${timestamp}] ${message}\n`;
-        
+
         if (data) {
           try {
             text += JSON.stringify(data, null, 2) + '\n';
@@ -359,22 +425,22 @@
             text += String(data) + '\n';
           }
         }
-        
+
         this.element.textContent += text;
         console.log(message, data);
       },
 
       error(message, error = null) {
         if (!this.element) return;
-        
+
         const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
         let text = `[${timestamp}] ERROR: ${message}\n`;
-        
+
         if (error) {
           text += error.stack || error.message || String(error);
           text += '\n';
         }
-        
+
         this.element.textContent += text;
         console.error(message, error);
       }
@@ -385,7 +451,7 @@
       async fetch(endpoint, options = {}) {
         const url = CONFIG.API_BASE + endpoint;
         Debug.log(`Fetching: ${url}`);
-        
+
         const token = localStorage.getItem('discord_access_token');
         if (!token && endpoint !== '/debug/env') {
           throw new Error('No access token found');
@@ -393,7 +459,7 @@
 
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
-        
+
         try {
           const response = await fetch(url, {
             ...options,
@@ -404,12 +470,12 @@
             },
             signal: controller.signal
           });
-          
+
           Debug.log(`Response status: ${response.status}`);
-          
+
           const text = await response.text();
           let data;
-          
+
           try {
             data = JSON.parse(text);
             Debug.log('Response data:', data);
@@ -417,11 +483,11 @@
             Debug.log('Raw response:', text);
             throw new Error('Invalid JSON response');
           }
-          
+
           if (!response.ok) {
             throw new Error(data.message || `HTTP error ${response.status}`);
           }
-          
+
           return data;
         } catch (error) {
           if (error.name === 'AbortError') {
@@ -459,7 +525,7 @@
 
       setProfileData(userData) {
         // Update avatar
-        const avatarUrl = userData.avatar 
+        const avatarUrl = userData.avatar
           ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png?size=256`
           : CONFIG.DEFAULT_AVATAR;
 
@@ -474,12 +540,12 @@
         // Update text elements
         document.getElementById('user-name').textContent = userData.username;
         document.getElementById('profile-name').textContent = userData.username;
-        
+
         const tag = userData.discriminator && userData.discriminator !== '0'
           ? `${userData.username}#${userData.discriminator}`
           : userData.global_name || userData.username;
         document.getElementById('profile-tag').textContent = tag;
-        
+
         document.getElementById('profile-id').textContent = `ID: ${userData.id}`;
         document.getElementById('goto-account').href = `https://discord.com/users/${userData.id}`;
       },
@@ -497,7 +563,7 @@
 
       setLoginPrompt() {
         document.getElementById('profile-name').textContent = 'Not signed in';
-        document.getElementById('auth-status').innerHTML = 
+        document.getElementById('auth-status').innerHTML =
           '<a class="btn" href="login.html">Sign in with Discord</a>';
       },
 
@@ -516,7 +582,7 @@
           const card = document.createElement('div');
           card.className = 'server-card';
 
-          const icon = guild.icon 
+          const icon = guild.icon
             ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
             : CONFIG.DEFAULT_AVATAR;
 
@@ -531,9 +597,9 @@
               <div class="member-count">${guild.approximate_member_count || 'Unknown'} Members</div>
               <div class="server-actions">
                 ${botPresence.has(String(guild.id))
-                  ? `<a href="/manage.html?id=${guild.id}" class="btn">Manage Server</a>`
-                  : `<a href="https://discord.com/api/oauth2/authorize?client_id=${CONFIG.BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${guild.id}" class="btn">Add to Server</a>`
-                }
+              ? `<a href="manage.html?id=${guild.id}" class="btn">Manage Server</a>`
+              : `<a href="https://discord.com/api/oauth2/authorize?client_id=${CONFIG.BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${guild.id}" class="btn">Add to Server</a>`
+            }
               </div>
             </div>
           `;
@@ -547,7 +613,7 @@
     async function checkAuth() {
       Debug.clear();
       Debug.log('Starting authentication check');
-      
+
       const token = localStorage.getItem('discord_access_token');
       Debug.log('Token exists:', Boolean(token));
 
@@ -579,15 +645,15 @@
         // Load user profile
         const userData = await API.getProfile();
         UI.setProfileData(userData);
-        
+
         // Load guilds
         const guilds = await API.getGuilds();
         Debug.log('Loaded guilds:', guilds.length);
-        
+
         // Check bot presence
         const guildIds = guilds.map(g => g.id);
         let botPresence = new Set();
-        
+
         try {
           const status = await API.getBotStatus(guildIds);
           botPresence = new Set(status.present || []);
@@ -595,10 +661,10 @@
         } catch (error) {
           Debug.error('Failed to check bot presence', error);
         }
-        
+
         UI.renderServers(guilds, botPresence);
         return true;
-        
+
       } catch (error) {
         Debug.error('Failed to load user data', error);
         throw error;
@@ -608,12 +674,12 @@
     function debugState() {
       Debug.clear();
       const token = localStorage.getItem('discord_access_token');
-      
+
       Debug.log('Debug State');
       Debug.log('API Base:', CONFIG.API_BASE);
       Debug.log('Token exists:', Boolean(token));
-      Debug.log('Token preview:', token ? token.slice(0,10) + '...' : 'null');
-      
+      Debug.log('Token preview:', token ? token.slice(0, 10) + '...' : 'null');
+
       // Check UI state
       Debug.log('UI Elements:');
       ['user-avatar', 'profile-avatar', 'profile-name', 'auth-status'].forEach(id => {
@@ -623,7 +689,7 @@
           content: el.tagName === 'IMG' ? el.src : el.textContent
         } : 'not found');
       });
-      
+
       // Check backend connection
       API.fetch('/debug/env')
         .then(data => Debug.log('Backend env:', data))
